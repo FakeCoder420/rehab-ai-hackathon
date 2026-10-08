@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { X, Activity, Camera as CameraIcon, Volume2, Mic, MicOff, CheckCircle2, AlertCircle } from 'lucide-react';
+import { X, Activity, Camera as CameraIcon, Volume2, Mic, MicOff, CheckCircle2, AlertCircle, Pause, Play, Camera } from 'lucide-react';
 
 declare global {
   interface Window {
@@ -21,6 +21,7 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
   const [isListening, setIsListening] = useState(false);
   const [isPaused, setIsPaused] = useState(false);
   const [sosAlert, setSosAlert] = useState<boolean>(false);
+  const [isPositioned, setIsPositioned] = useState(false);
   
   const stageRef = useRef<'down' | 'up' | 'neutral'>('neutral');
   const isSpeakingRef = useRef(false);
@@ -82,6 +83,13 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
         const knee = results.poseLandmarks[26];
         const ankle = results.poseLandmarks[28];
 
+        if (hip && ankle) {
+          const isVisible = (hip.visibility || 0) > 0.6 && (ankle.visibility || 0) > 0.6;
+          setIsPositioned(isVisible);
+        } else {
+          setIsPositioned(false);
+        }
+
         if (hip && knee && ankle) {
           const currentAngle = calculateAngle(hip, knee, ankle);
           setAngle(currentAngle);
@@ -101,6 +109,8 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
             }
           }
         }
+      } else {
+        setIsPositioned(false);
       }
       canvasCtx.restore();
     });
@@ -176,6 +186,10 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
     }
   }, [reps, speakFeedback, exerciseName]);
 
+  const togglePause = () => {
+    setIsPaused(!isPaused);
+  };
+
   const toggleMic = () => {
     if (isListening) recognitionRef.current?.stop();
     else recognitionRef.current?.start();
@@ -196,14 +210,43 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
           <button onClick={toggleMic} className={`p-2 rounded-full ${isListening ? 'bg-red-500/20 text-red-500' : 'bg-slate-800 text-slate-400'}`}>
             {isListening ? <Mic size={20} /> : <MicOff size={20} />}
           </button>
-          <button onClick={onClose} className="p-2 rounded-full bg-slate-800 text-white"><X size={20} /></button>
+          <button onClick={togglePause} className="p-2 rounded-full bg-slate-800 text-white hover:bg-slate-700 transition">
+            {isPaused ? <Play size={20} className="text-emerald-400" /> : <Pause size={20} />}
+          </button>
+          <button onClick={onClose} className="p-2 rounded-full bg-slate-800 text-white hover:bg-red-500 hover:text-white transition"><X size={20} /></button>
         </div>
       </div>
 
       {/* Camera View */}
       <div className="flex-1 relative overflow-hidden bg-black flex justify-center items-center">
         <video ref={videoRef} className="hidden" />
-        <canvas ref={canvasRef} className="w-full h-full object-cover" width="640" height="480" />
+        <div className={`w-full h-full object-cover absolute inset-0 border-[6px] transition-colors duration-500 ${!isPositioned ? 'border-amber-500/80 animate-pulse' : 'border-emerald-500/50'}`}>
+          <canvas ref={canvasRef} className="w-full h-full object-cover" width="640" height="480" />
+          
+          {!isPositioned && (
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-amber-900/90 text-amber-100 px-6 py-4 rounded-2xl flex items-center space-x-3 shadow-xl backdrop-blur-md">
+              <Camera className="w-8 h-8 animate-bounce" />
+              <div>
+                <p className="font-bold text-lg">Positioning Required</p>
+                <p className="text-sm opacity-90">Step back to ensure full body visibility</p>
+              </div>
+            </div>
+          )}
+          
+          {isPaused && !sosAlert && (
+            <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm z-40 flex items-center justify-center animate-in fade-in">
+              <div className="bg-slate-900 p-8 rounded-3xl border border-slate-700 text-center shadow-2xl">
+                <Pause className="w-12 h-12 text-slate-400 mx-auto mb-4" />
+                <h3 className="text-2xl font-bold text-white mb-2">Session Paused</h3>
+                <p className="text-slate-400 mb-6 max-w-sm mx-auto">Telemetry collection is temporarily halted. Take your time to rest.</p>
+                <button onClick={togglePause} className="w-full py-3 px-6 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl flex items-center justify-center transition-colors">
+                  <Play className="w-5 h-5 mr-2" />
+                  Resume Session
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
         
         {/* HUD Overlays */}
         <div className="absolute top-4 left-4 bg-slate-900/80 p-3 rounded-xl border border-cyan-500/50">

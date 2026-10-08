@@ -11,6 +11,7 @@ import {
   LayoutDashboard, Menu, Settings, MessageSquare, LogOut, SearchIcon, ArrowUpRight, ArrowDownRight,
   MoreVertical, Eye, HeartPulse
 } from 'lucide-react';
+import { LineChart, Line, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 import { useTheme } from 'next-themes';
 import { ExerciseLibrary } from './doctor/ExerciseLibrary';
 
@@ -378,6 +379,29 @@ export function DoctorDashboard() {
                           <div className="bg-emerald-500 h-2 rounded-full w-[79%]" />
                         </div>
                       </div>
+
+                    <div>
+                      <h4 className="text-[14px] font-bold text-slate-900 dark:text-white mb-4 uppercase tracking-wider flex items-center"><TrendingUp className="w-4 h-4 mr-2"/> Patient Progress</h4>
+                      <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-800 h-64">
+                        <ResponsiveContainer width="100%" height="100%">
+                          <LineChart data={[
+                            { day: 'Day 1', adherence: 60, formScore: 85 },
+                            { day: 'Day 4', adherence: 75, formScore: 88 },
+                            { day: 'Day 7', adherence: 90, formScore: 92 },
+                            { day: 'Day 10', adherence: 95, formScore: 96 }
+                          ]} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                            <XAxis dataKey="day" stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
+                            <YAxis stroke="#94a3b8" fontSize={12} tickLine={false} axisLine={false} />
+                            <RechartsTooltip 
+                              contentStyle={{ backgroundColor: '#1e293b', border: 'none', borderRadius: '8px', color: '#f8fafc' }}
+                              itemStyle={{ color: '#f8fafc' }}
+                            />
+                            <Line type="monotone" dataKey="adherence" name="Adherence %" stroke="#10b981" strokeWidth={3} dot={{ r: 4, fill: '#10b981' }} activeDot={{ r: 6 }} />
+                            <Line type="monotone" dataKey="formScore" name="Form Score" stroke="#3b82f6" strokeWidth={3} dot={{ r: 4, fill: '#3b82f6' }} activeDot={{ r: 6 }} />
+                          </LineChart>
+                        </ResponsiveContainer>
+                      </div>
+                    </div>
                     </div>
 
                     <div>
