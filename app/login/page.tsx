@@ -225,7 +225,7 @@ function LoginContent() {
 
             {/* Forms */}
             {activeTab === 'patient' && (
-              <form onSubmit={handlePatientSubmit} className="space-y-5">
+              <form onSubmit={handlePatientSubmit} className="space-y-5" noValidate>
                 <div>
                   <label htmlFor="patientEmail" className="block text-[14px] font-bold mb-1.5 text-slate-700 dark:text-slate-300">
                     Email address
@@ -308,7 +308,7 @@ function LoginContent() {
             )}
 
             {activeTab === 'doctor' && !isRequestingAccess && (
-              <form onSubmit={handleDoctorSubmit} className="space-y-5">
+              <form onSubmit={handleDoctorSubmit} className="space-y-5" noValidate>
                 <div>
                   <label htmlFor="docEmail" className="block text-[14px] font-bold mb-1.5 text-slate-700 dark:text-slate-300">
                     Work email
