@@ -29,12 +29,12 @@ export function ProtectedRoute({
   // Loading state while verifying credentials from localStorage
   if (isLoading) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 bg-slate-50 dark:bg-slate-900">
-        <div className="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-500/30 animate-pulse mb-4">
+      <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-slate-50 dark:bg-slate-950">
+        <div className="w-12 h-12 rounded-2xl bg-emerald-600 text-white flex items-center justify-center shadow-lg shadow-emerald-500/30 animate-pulse mb-4">
           <Activity className="w-6 h-6 animate-spin" />
         </div>
-        <p className="text-sm font-bold text-slate-800 dark:text-slate-200">Verifying Clinical Security Credentials...</p>
-        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Checking cryptographic session and RBAC permissions</p>
+        <p className="text-sm font-bold text-slate-800 dark:text-slate-200">Verifying Session...</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Securing connection</p>
       </div>
     );
   }

@@ -16,16 +16,18 @@ import {
   Sun,
   Moon
 } from 'lucide-react';
-import { useTheme } from 'next-themes';
+
 
 export function Navbar() {
   const router = useRouter();
   const { 
-    setActiveRole
+    setActiveRole,
+    theme,
+    toggleTheme
   } = useRehab();
 
   const { user, isAuthenticated, logout } = useAuth();
-  const { theme, setTheme } = useTheme();
+
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
@@ -71,11 +73,11 @@ export function Navbar() {
           <div className="flex items-center space-x-3">
             {mounted && (
               <button
-                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
-                className="p-2 sm:px-3 sm:py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 dark:border-slate-700 bg-white dark:bg-slate-800 dark:bg-slate-900 dark:bg-slate-800 text-slate-600 dark:text-slate-400 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-700 transition-all shadow-sm"
-                title="Toggle Dark Mode"
+                onClick={toggleTheme}
+                className="p-2 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition border border-transparent dark:border-slate-700"
+                title="Toggle Theme"
               >
-                {theme === 'dark' ? <Sun className="w-4 h-4 sm:w-5 sm:h-5" /> : <Moon className="w-4 h-4 sm:w-5 sm:h-5" />}
+                {theme === 'light' ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
               </button>
             )}
 

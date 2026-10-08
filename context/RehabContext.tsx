@@ -275,6 +275,8 @@ export interface AddPatientData {
 }
 
 interface RehabContextType {
+  theme: 'light' | 'dark';
+  toggleTheme: () => void;
   activeRole: UserRole;
   setActiveRole: (role: UserRole) => void;
   patients: Patient[];
@@ -313,6 +315,15 @@ interface RehabContextType {
 const RehabContext = createContext<RehabContextType | undefined>(undefined);
 
 export function RehabProvider({ children }: { children: ReactNode }) {
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
+
+  useEffect(() => {
+    const root = window.document.documentElement;
+    root.classList.remove('light', 'dark');
+    root.classList.add(theme);
+  }, [theme]);
+
+  const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light');
   const [activeRole, setActiveRole] = useState<UserRole>('landing');
   const [patients, setPatients] = useState<Patient[]>(SEED_PATIENTS);
   const [exercises] = useState<Exercise[]>(INITIAL_EXERCISES);
@@ -535,6 +546,8 @@ export function RehabProvider({ children }: { children: ReactNode }) {
   return (
     <RehabContext.Provider
       value={{
+        theme,
+        toggleTheme,
         activeRole,
         setActiveRole,
         patients,

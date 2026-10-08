@@ -57,6 +57,7 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
       return;
     }
 
+    let active = true;
     const pose = new window.Pose({
       locateFile: (file: string) => `https://cdn.jsdelivr.net/npm/@mediapipe/pose/${file}`,
     });
@@ -64,6 +65,7 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
     pose.setOptions({ modelComplexity: 1, smoothLandmarks: true, minDetectionConfidence: 0.5 });
 
     pose.onResults((results: any) => {
+      if (!active) return;
       if (!canvasRef.current || !videoRef.current) return;
       const canvasCtx = canvasRef.current.getContext('2d');
       if (!canvasCtx) return;
@@ -103,15 +105,35 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
       canvasCtx.restore();
     });
 
-    const camera = new window.Camera(videoRef.current, {
-      onFrame: async () => {
-        if (videoRef.current) await pose.send({ image: videoRef.current });
-      },
-      width: 640, height: 480
-    });
-    camera.start();
+    let camera: any = null;
+    let animationFrameId: number;
+    
+    if (videoRef.current) {
+      camera = new window.Camera(videoRef.current, {
+        onFrame: async () => {
+          if (active && videoRef.current) {
+            await pose.send({ image: videoRef.current });
+          }
+        },
+        width: 640, height: 480
+      });
+      camera.start();
+    }
 
-    return () => { camera.stop(); pose.close(); };
+    return () => { 
+      active = false;
+      if (camera) {
+        camera.stop();
+      }
+      if (pose) {
+        pose.close();
+      }
+      if (videoRef.current && videoRef.current.srcObject) {
+        const stream = videoRef.current.srcObject as MediaStream;
+        stream.getTracks().forEach(track => track.stop());
+        videoRef.current.srcObject = null;
+      }
+    };
   }, [isOpen, speakFeedback, targetReps]);
 
   // Setup Voice Recognition
