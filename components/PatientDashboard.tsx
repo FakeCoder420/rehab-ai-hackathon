@@ -1,0 +1,485 @@
+'use client';
+
+import React, { useState, useMemo } from 'react';
+import { useRehab } from '@/context/RehabContext';
+import { useAuth } from '@/context/AuthContext';
+import { ScheduledTask } from '@/types/rehab';
+import { VisionSessionModal } from './VisionSessionModal';
+import { 
+  User, 
+  Calendar, 
+  Clock, 
+  CheckCircle2, 
+  AlertCircle, 
+  Play, 
+  Activity, 
+  Phone, 
+  Globe, 
+  ChevronRight, 
+  HeartPulse, 
+  RotateCcw,
+  Sparkles,
+  Info,
+  CalendarDays,
+  ShieldCheck,
+  Lock,
+  Dumbbell,
+  Trophy,
+  Flame,
+  Star
+} from 'lucide-react';
+import { ExerciseLibrary, EXERCISES } from './doctor/ExerciseLibrary';
+
+export function PatientDashboard() {
+  const { user } = useAuth();
+  const { 
+    patients, 
+    scheduledTasks, 
+    selectedPatientId, 
+    setSelectedPatientId, 
+    toggleTaskStatus 
+  } = useRehab();
+
+  const [activeSessionTask, setActiveSessionTask] = useState<ScheduledTask | null>(null);
+  const [activeTab, setActiveTab] = useState<'schedule' | 'library'>('schedule');
+
+  React.useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('tab') === 'library') {
+        setActiveTab('library');
+      }
+
+      const handleTabSwitch = (e: Event) => {
+        const customEvt = e as CustomEvent<string>;
+        if (customEvt.detail === 'library') {
+          setActiveTab('library');
+        } else if (customEvt.detail === 'schedule') {
+          setActiveTab('schedule');
+        }
+      };
+
+      window.addEventListener('switch-patient-tab', handleTabSwitch);
+      return () => {
+        window.removeEventListener('switch-patient-tab', handleTabSwitch);
+      };
+    }
+  }, []);
+
+  const isPatientLoggedIn = user?.role === 'patient';
+  const effectivePatientId = isPatientLoggedIn && user.linkedPatientId 
+    ? user.linkedPatientId 
+    : selectedPatientId;
+
+  const currentPatient = useMemo(() => {
+    return patients.find((p) => p.id === effectivePatientId) || patients[0];
+  }, [patients, effectivePatientId]);
+
+  const isolatedTasks = useMemo(() => {
+    if (!currentPatient) return [];
+    return scheduledTasks
+      .filter((t) => t.patientId === currentPatient.id)
+      .sort((a, b) => a.timeSlot.localeCompare(b.timeSlot));
+  }, [scheduledTasks, currentPatient]);
+
+  if (!currentPatient) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-16 text-center">
+        <p className="text-slate-500">No patient record linked to this account.</p>
+      </div>
+    );
+  }
+
+  const totalTasks = isolatedTasks.length;
+  const completedTasks = isolatedTasks.filter((t) => t.status === 'completed').length;
+  const progressPercent = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+
+  const todayFormatted = new Intl.DateTimeFormat('en-US', {
+    weekday: 'long',
+    month: 'long',
+    day: 'numeric',
+    year: 'numeric',
+  }).format(new Date());
+
+  const handleStartSession = (task: ScheduledTask) => {
+    setActiveSessionTask(task);
+  };
+
+  const handleSessionComplete = (taskId: string) => {
+    const task = isolatedTasks.find((t) => t.id === taskId);
+    if (task && task.status === 'pending') {
+      toggleTaskStatus(taskId);
+    }
+  };
+
+  return (
+    <div className="min-h-[calc(100vh-4rem)] bg-slate-50/70 pb-20">
+      
+      {/* 1. Patient Profile Summary Bar & Recovery Score */}
+      <section className="bg-gradient-to-r from-emerald-50 to-white border-b border-emerald-100">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            {/* Left Col: Profile & Info (Spans 2 cols) */}
+            <div className="lg:col-span-2 flex flex-col justify-between">
+              
+              <div className="flex items-start space-x-5">
+                {/* Bigger, Bolder Avatar */}
+                <div className="w-16 h-16 rounded-full bg-emerald-600 text-white flex items-center justify-center font-extrabold text-2xl shadow-lg shadow-emerald-600/30 flex-shrink-0 border-4 border-white">
+                  {currentPatient.name.split(' ').map((n) => n[0]).join('')}
+                </div>
+
+                <div className="flex-1">
+                  <div className="flex flex-wrap items-center gap-3">
+                    <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+                      {currentPatient.name}
+                    </h1>
+                    <span className="text-xs font-bold px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center space-x-1 shadow-sm">
+                      <HeartPulse className="w-3.5 h-3.5 mr-1 text-emerald-600" />
+                      <span>Recovery Week {currentPatient.recoveryWeek} Post-Op</span>
+                    </span>
+                    {!isPatientLoggedIn && (
+                      <div className="flex items-center space-x-2 bg-white/80 p-1.5 rounded-xl border border-slate-200 shadow-xs">
+                        <select
+                          value={effectivePatientId}
+                          onChange={(e) => setSelectedPatientId(e.target.value)}
+                          className="text-xs font-bold bg-transparent px-2 py-0.5 text-slate-800 focus:outline-none"
+                        >
+                          {patients.map((p) => (
+                            <option key={p.id} value={p.id}>View: {p.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Encouraging Text */}
+                  <p className="text-sm font-semibold text-emerald-700 mt-2 flex items-center space-x-1.5">
+                    <Sparkles className="w-4 h-4 text-emerald-500" />
+                    <span>You're doing great, {currentPatient.name.split(' ')[0]}! Keep up the momentum today.</span>
+                  </p>
+
+                  {/* Cleaned up Info Grid (2-column on desktop) */}
+                  <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-slate-700 bg-white/60 p-4 rounded-2xl border border-emerald-100/50 backdrop-blur-sm">
+                    <div className="flex items-center space-x-3">
+                      <Activity className="w-4 h-4 text-teal-600" />
+                      <span><strong>Procedure:</strong> {currentPatient.surgeryType}</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <Calendar className="w-4 h-4 text-teal-600" />
+                      <span><strong>Date:</strong> {currentPatient.surgeryDate}</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <Phone className="w-4 h-4 text-teal-600" />
+                      <span><strong>Caregiver:</strong> {currentPatient.caregiverContact}</span>
+                    </div>
+                    <div className="flex items-center space-x-3">
+                      <ShieldCheck className="w-4 h-4 text-teal-600" />
+                      <span><strong>Isolation:</strong> Active & Secure</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Adherence Bar */}
+              <div className="mt-6">
+                <div className="flex items-center justify-between text-xs font-bold text-slate-700 mb-2">
+                  <span className="flex items-center space-x-1.5">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <span>Today's Prescribed Routine Adherence</span>
+                  </span>
+                  <span className="text-slate-900">
+                    {completedTasks} of {totalTasks} Sessions ({progressPercent}%)
+                  </span>
+                </div>
+                <div className="w-full h-3 bg-white border border-emerald-100 rounded-full overflow-hidden shadow-inner">
+                  <div
+                    className={`h-full transition-all duration-1000 ease-out rounded-full ${
+                      progressPercent === 100
+                        ? 'bg-emerald-500'
+                        : progressPercent > 0
+                        ? 'bg-gradient-to-r from-teal-400 to-emerald-500'
+                        : 'bg-slate-300'
+                    }`}
+                    style={{ width: `${progressPercent}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Right Col: Recovery Score Card */}
+            <div className="bg-white rounded-3xl p-6 border border-emerald-100 shadow-xl shadow-emerald-900/5 flex flex-col items-center justify-center relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-teal-400 to-emerald-500"></div>
+              
+              <div className="flex items-center space-x-2 mb-4">
+                <Trophy className="w-5 h-5 text-amber-500" />
+                <h3 className="text-sm font-extrabold text-slate-800 uppercase tracking-widest">Recovery Score</h3>
+              </div>
+              
+              <div className="relative flex items-center justify-center mb-2">
+                <div className="w-28 h-28 rounded-full border-8 border-emerald-50 flex items-center justify-center relative shadow-inner">
+                  <svg className="absolute inset-0 w-full h-full transform -rotate-90">
+                    <circle cx="50%" cy="50%" r="46%" className="stroke-current text-emerald-500" strokeWidth="8" fill="transparent" strokeDasharray="289" strokeDashoffset="46" strokeLinecap="round" />
+                  </svg>
+                  <div className="flex flex-col items-center z-10">
+                    <span className="text-4xl font-black text-slate-900 tracking-tighter">84</span>
+                  </div>
+                </div>
+              </div>
+              
+              <p className="text-[10px] text-center text-slate-500 font-bold px-4 mb-5 uppercase tracking-wider">
+                Based on adherence & AI analytics
+              </p>
+
+              {/* Rehab Timeline Progress */}
+              <div className="w-full mt-2">
+                <div className="flex justify-between text-[10px] font-bold text-slate-400 mb-2 px-1">
+                  <span>Wk 1</span>
+                  <span>Wk 2</span>
+                  <span className="text-emerald-700 bg-emerald-50 px-1.5 rounded">Wk 3</span>
+                  <span>Wk 4</span>
+                </div>
+                <div className="w-full h-2.5 bg-slate-100 rounded-full overflow-hidden flex shadow-inner">
+                  <div className="h-full bg-emerald-500 w-1/4 border-r-2 border-emerald-600"></div>
+                  <div className="h-full bg-emerald-500 w-1/4 border-r-2 border-emerald-600"></div>
+                  <div className="h-full bg-emerald-400 w-1/4 animate-pulse relative">
+                     <div className="absolute right-0 top-0 bottom-0 w-1 bg-emerald-600"></div>
+                  </div>
+                  <div className="h-full bg-transparent w-1/4"></div>
+                </div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* Tab Navigation: Schedule vs Exercise Library */}
+      <div className="bg-white border-b border-slate-200 sticky top-16 z-30 shadow-xs">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex space-x-2 sm:space-x-3 py-2.5 overflow-x-auto">
+            <button
+              type="button"
+              onClick={() => setActiveTab('schedule')}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+                activeTab === 'schedule'
+                  ? 'bg-emerald-600 text-white shadow-md'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <CalendarDays className="w-4 h-4" />
+              <span>Prescribed Schedule</span>
+              <span className={`text-[11px] px-2 py-0.5 rounded-full font-black ${
+                activeTab === 'schedule' ? 'bg-emerald-700 text-white' : 'bg-slate-200 text-slate-700'
+              }`}>
+                {isolatedTasks.length}
+              </span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveTab('library')}
+              className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+                activeTab === 'library'
+                  ? 'bg-emerald-600 text-white shadow-md'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <Dumbbell className="w-4 h-4" />
+              <span>Exercise Library</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. Daily Schedule View */}
+      {activeTab === 'schedule' && (
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+        
+        {/* Schedule Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-6">
+          <div>
+            <div className="flex items-center space-x-2 text-xs font-black text-emerald-600 uppercase tracking-wider">
+              <Flame className="w-4 h-4" />
+              <span>Next Action Required</span>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 mt-1">
+              Your Daily Routine for {todayFormatted}
+            </h2>
+          </div>
+        </div>
+
+        {/* Schedule Cards / Time Grid */}
+        {isolatedTasks.length === 0 ? (
+          <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center shadow-sm">
+            <Calendar className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+            <h3 className="text-lg font-bold text-slate-800">No Exercises Scheduled</h3>
+            <p className="text-sm text-slate-500 max-w-sm mx-auto mt-2">
+              You are all caught up! Your clinician has not scheduled any sessions for today.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-5">
+            {isolatedTasks.map((task, index) => {
+              const isCompleted = task.status === 'completed';
+              // Find matching exercise to get the thumbnail image
+              const matchedExercise = EXERCISES.find(ex => ex.id === task.exerciseId || ex.title === task.exerciseName);
+              const thumbUrl = matchedExercise?.image_url || 'https://placehold.co/100x100/eeeeee/999999?text=Exercise';
+
+              return (
+                <div
+                  key={task.id}
+                  className={`relative bg-white rounded-3xl transition-all duration-300 p-5 sm:p-6 shadow-sm overflow-hidden ${
+                    isCompleted
+                      ? 'border border-slate-200 opacity-75 bg-slate-50/50 grayscale-[20%]'
+                      : 'border-l-8 border-emerald-500 border-y border-r border-slate-200 hover:shadow-lg'
+                  }`}
+                >
+                  <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                    
+                    {/* Left: Time Slot Pill, Thumbnail & Exercise Details */}
+                    <div className="flex items-center space-x-5 flex-1">
+                      
+                      {/* Scheduled Time Slot Badge */}
+                      <div className="hidden sm:flex flex-col items-center justify-center w-28 py-3 rounded-2xl bg-slate-100 border border-slate-200 text-slate-800 flex-shrink-0">
+                        <Clock className="w-4 h-4 text-emerald-600 mb-1" />
+                        <span className="text-xs font-black text-slate-900 text-center leading-tight">
+                          {task.timeSlot}
+                        </span>
+                        <span className="text-[10px] text-slate-500 font-bold mt-1 uppercase">Session {index + 1}</span>
+                      </div>
+
+                      {/* Thumbnail Image */}
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden flex-shrink-0 shadow-sm border border-slate-200">
+                        <img 
+                          src={thumbUrl} 
+                          alt={task.exerciseName} 
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+
+                      {/* Exercise Name & Target Reps/Sets */}
+                      <div className="flex-1">
+                        <div className="flex flex-wrap items-center gap-3">
+                          <h3 className={`text-lg sm:text-xl font-extrabold ${isCompleted ? 'text-slate-700' : 'text-slate-900'}`}>
+                            {task.exerciseName}
+                          </h3>
+                          
+                          {/* Status Badge */}
+                          <span
+                            className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-[10px] uppercase tracking-wider font-black ${
+                              isCompleted
+                                ? 'bg-slate-200 text-slate-600'
+                                : 'bg-emerald-100 text-emerald-800 border border-emerald-200 animate-pulse'
+                            }`}
+                          >
+                            {isCompleted ? (
+                              <>
+                                <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
+                                <span>Completed</span>
+                              </>
+                            ) : (
+                              <>
+                                <Play className="w-3.5 h-3.5 mr-1 fill-current" />
+                                <span>Up Next</span>
+                              </>
+                            )}
+                          </span>
+                        </div>
+
+                        {/* Targets Chips */}
+                        <div className="mt-2.5 flex flex-wrap items-center gap-2">
+                          <span className="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold">
+                            Target: {task.targetReps} Reps
+                          </span>
+                          <span className="px-3 py-1.5 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold">
+                            Sets: {task.targetSets || 3}
+                          </span>
+                          {task.completedAt && (
+                            <span className="text-xs text-slate-500 font-semibold flex items-center space-x-1">
+                              <CheckCircle2 className="w-3 h-3 text-emerald-500" />
+                              <span>Logged at {task.completedAt}</span>
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                    </div>
+
+                    {/* Right: Actions */}
+                    <div className="flex flex-col items-stretch sm:items-end gap-3 pt-4 lg:pt-0 lg:pl-6 border-t lg:border-t-0 lg:border-l border-slate-100 flex-shrink-0">
+                      
+                      {/* "Start Exercise Session" Button */}
+                      <button
+                        type="button"
+                        onClick={() => handleStartSession(task)}
+                        className={`inline-flex items-center justify-center space-x-2 px-6 py-4 rounded-2xl font-black text-sm transition-all duration-300 w-full sm:w-auto ${
+                          isCompleted
+                            ? 'border-2 border-slate-300 text-slate-600 hover:bg-slate-100'
+                            : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-xl shadow-emerald-600/30 hover:-translate-y-1'
+                        }`}
+                      >
+                        {isCompleted ? (
+                          <>
+                            <RotateCcw className="w-4 h-4" />
+                            <span>Review / Retake</span>
+                          </>
+                        ) : (
+                          <>
+                            <Play className="w-5 h-5 fill-current" />
+                            <span className="tracking-wide">START SESSION</span>
+                          </>
+                        )}
+                      </button>
+
+                      {/* Manual Quick Status Toggle */}
+                      <button
+                        type="button"
+                        onClick={() => toggleTaskStatus(task.id)}
+                        className="text-[10px] font-bold text-slate-400 hover:text-slate-600 underline text-center sm:text-right"
+                      >
+                        {isCompleted ? 'Mark as pending' : 'Quick mark as done (skip video)'}
+                      </button>
+
+                    </div>
+
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+
+        {/* Post-Op Safety Note Callout */}
+        <div className="mt-8 p-5 rounded-2xl bg-white border border-blue-100 shadow-sm flex items-start space-x-4 text-xs sm:text-sm text-slate-600">
+          <div className="p-2 bg-blue-50 rounded-full flex-shrink-0">
+            <Info className="w-5 h-5 text-blue-600" />
+          </div>
+          <div className="leading-relaxed mt-0.5">
+            <strong className="text-slate-800">Safety Notice:</strong> If you experience sharp, sudden pain or excessive swelling during your session, immediately stop and contact your care team at <strong className="text-blue-700">{currentPatient.caregiverContact}</strong>.
+          </div>
+        </div>
+
+      </main>
+      )}
+
+      {/* Exercise Library View */}
+      {activeTab === 'library' && (
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+          <ExerciseLibrary />
+        </main>
+      )}
+
+      {/* Interactive AI Session HUD Modal */}
+      <VisionSessionModal
+        isOpen={Boolean(activeSessionTask)}
+        onClose={() => setActiveSessionTask(null)}
+        exerciseName={activeSessionTask?.exerciseName}
+        targetReps={activeSessionTask?.targetReps}
+      />
+
+    </div>
+  );
+}
