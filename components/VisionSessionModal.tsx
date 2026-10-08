@@ -36,7 +36,7 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
     if (!window.speechSynthesis || isSpeakingRef.current) return;
     isSpeakingRef.current = true;
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-IN';
+    utterance.lang = 'hi-IN'; // Upgrade to Hindi native voice
     utterance.onend = () => { isSpeakingRef.current = false; };
     window.speechSynthesis.speak(utterance);
     setFeedback(text);
@@ -52,7 +52,6 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
   useEffect(() => {
     if (!isOpen) return;
     
-    // Ensure MediaPipe scripts are loaded in layout.tsx first!
     if (!window.Pose) {
       setFeedback("Error: MediaPipe not loaded.");
       return;
@@ -79,33 +78,76 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
         window.drawConnectors(canvasCtx, results.poseLandmarks, window.POSE_CONNECTIONS, { color: '#00FF00', lineWidth: 4 });
         window.drawLandmarks(canvasCtx, results.poseLandmarks, { color: '#FF0000', lineWidth: 2 });
 
+        const shoulder = results.poseLandmarks[12];
         const hip = results.poseLandmarks[24];
         const knee = results.poseLandmarks[26];
         const ankle = results.poseLandmarks[28];
+        const footIndex = results.poseLandmarks[32];
 
+        // Strict Calibration
         if (hip && ankle) {
           const isVisible = (hip.visibility || 0) > 0.6 && (ankle.visibility || 0) > 0.6;
           setIsPositioned(isVisible);
+          if (!isVisible) {
+            setFeedback('Kripya poori tarah camera ke frame mein aaiye.');
+          }
         } else {
           setIsPositioned(false);
         }
 
-        if (hip && knee && ankle) {
-          const currentAngle = calculateAngle(hip, knee, ankle);
-          setAngle(currentAngle);
+        if (isPositioned && !isPausedRef.current) {
+          let currentAngle = 90;
+          let a, b, c;
+          let downTarget = 100, upTarget = 150;
+          let compareMode = 'standard'; // 'standard' means down < downTarget and up > upTarget
 
-          if (!isPausedRef.current) {
-            if (currentAngle < 100) {
-              stageRef.current = 'down';
-            }
-            if (currentAngle > 150 && stageRef.current === 'down') {
-              stageRef.current = 'up';
-              setReps((prev) => {
-                const newReps = prev + 1;
-                if (newReps === targetReps) speakFeedback("Excellent! Session complete.");
-                else speakFeedback("Good rep! Keep going.");
-                return newReps;
-              });
+          switch (exerciseName) {
+            case 'Straight Leg Raise':
+              a = shoulder; b = hip; c = knee;
+              downTarget = 170; upTarget = 140;
+              compareMode = 'inverse'; // down > downTarget (flat), up < upTarget (lifted)
+              break;
+            case 'Ankle Pumps':
+              a = knee; b = ankle; c = footIndex;
+              downTarget = 100; upTarget = 130;
+              break;
+            case 'Seated Knee Extension':
+            default:
+              a = hip; b = knee; c = ankle;
+              downTarget = 100; upTarget = 150;
+              break;
+          }
+
+          if (a && b && c) {
+            currentAngle = calculateAngle(a, b, c);
+            setAngle(currentAngle);
+
+            if (compareMode === 'standard') {
+              if (currentAngle < downTarget) {
+                stageRef.current = 'down';
+              }
+              if (currentAngle > upTarget && stageRef.current === 'down') {
+                stageRef.current = 'up';
+                setReps((prev) => {
+                  const newReps = prev + 1;
+                  if (newReps === targetReps) speakFeedback("Behtareen! Session poora hua.");
+                  else speakFeedback("Bohot badiya rep! Jari rakhein.");
+                  return newReps;
+                });
+              }
+            } else if (compareMode === 'inverse') {
+              if (currentAngle > downTarget) {
+                stageRef.current = 'down';
+              }
+              if (currentAngle < upTarget && stageRef.current === 'down') {
+                stageRef.current = 'up';
+                setReps((prev) => {
+                  const newReps = prev + 1;
+                  if (newReps === targetReps) speakFeedback("Behtareen! Session poora hua.");
+                  else speakFeedback("Bohot badiya rep! Jari rakhein.");
+                  return newReps;
+                });
+              }
             }
           }
         }
@@ -116,7 +158,6 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
     });
 
     let camera: any = null;
-    let animationFrameId: number;
     
     if (videoRef.current) {
       camera = new window.Camera(videoRef.current, {
@@ -144,7 +185,7 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
         videoRef.current.srcObject = null;
       }
     };
-  }, [isOpen, speakFeedback, targetReps]);
+  }, [isOpen, speakFeedback, targetReps, exerciseName, isPositioned]);
 
   // Setup Voice Recognition
   useEffect(() => {
@@ -152,7 +193,7 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
     if (SpeechRecognition) {
       recognitionRef.current = new SpeechRecognition();
       recognitionRef.current.continuous = true;
-      recognitionRef.current.lang = 'en-IN';
+      recognitionRef.current.lang = 'hi-IN'; // Listen in Hindi/Hinglish
 
       recognitionRef.current.onresult = async (event: any) => {
         if (isPausedRef.current) return;
@@ -220,15 +261,15 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
       {/* Camera View */}
       <div className="flex-1 relative overflow-hidden bg-black flex justify-center items-center">
         <video ref={videoRef} className="hidden" />
-        <div className={`w-full h-full object-cover absolute inset-0 border-[6px] transition-colors duration-500 ${!isPositioned ? 'border-amber-500/80 animate-pulse' : 'border-emerald-500/50'}`}>
+        <div className={`w-full h-full object-cover absolute inset-0 border-[6px] transition-colors duration-500 ${!isPositioned ? 'border-red-500 border-dashed animate-pulse' : 'border-emerald-500 border-solid'}`}>
           <canvas ref={canvasRef} className="w-full h-full object-cover" width="640" height="480" />
           
           {!isPositioned && (
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-amber-900/90 text-amber-100 px-6 py-4 rounded-2xl flex items-center space-x-3 shadow-xl backdrop-blur-md">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-red-900/90 text-red-100 px-6 py-4 rounded-2xl flex items-center space-x-3 shadow-xl backdrop-blur-md">
               <Camera className="w-8 h-8 animate-bounce" />
               <div>
                 <p className="font-bold text-lg">Positioning Required</p>
-                <p className="text-sm opacity-90">Step back to ensure full body visibility</p>
+                <p className="text-sm opacity-90">Kripya poori tarah camera ke frame mein aaiye.</p>
               </div>
             </div>
           )}
@@ -251,7 +292,7 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
         {/* HUD Overlays */}
         <div className="absolute top-4 left-4 bg-slate-900/80 p-3 rounded-xl border border-cyan-500/50">
           <div className="text-xs text-cyan-400 font-bold mb-1 flex items-center"><Activity size={14} className="mr-1"/> Angle</div>
-          <div className="text-2xl font-mono text-white">{angle}°</div>
+          <div className="text-2xl font-mono text-white">{angle}&deg;</div>
         </div>
         
         <div className="absolute top-4 right-4 bg-slate-900/80 p-3 rounded-xl border border-emerald-500/50 text-right">
