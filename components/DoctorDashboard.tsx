@@ -1,713 +1,421 @@
 'use client';
-
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useRehab } from '@/context/RehabContext';
 import { useAuth } from '@/context/AuthContext';
 import { CreatePatientModal } from './CreatePatientModal';
 import { Patient, ScheduledTask } from '@/types/rehab';
 import { 
-  Users, 
-  Activity, 
-  UserPlus, 
-  Search, 
-  Calendar, 
-  Clock, 
-  Phone, 
-  Globe, 
-  CheckCircle2, 
-  AlertCircle, 
-  ChevronRight, 
-  TrendingUp, 
-  Stethoscope, 
-  Filter, 
-  Sparkles, 
-  Award,
-  Key,
-  PlusCircle,
-  X,
-  FileCheck,
-  Send,
-  BookOpen,
-  Dumbbell,
-  Sun,
-  Moon
+  Users, Activity, UserPlus, Search, Calendar, Clock, Phone, Globe, CheckCircle2, 
+  AlertCircle, ChevronRight, TrendingUp, Stethoscope, Filter, Sparkles, Award,
+  Key, PlusCircle, X, FileCheck, Send, BookOpen, Dumbbell, Sun, Moon,
+  LayoutDashboard, Menu, Settings, MessageSquare, LogOut, SearchIcon, ArrowUpRight, ArrowDownRight,
+  MoreVertical, Eye, HeartPulse
 } from 'lucide-react';
+import { useTheme } from 'next-themes';
 import { ExerciseLibrary } from './doctor/ExerciseLibrary';
 
 export function DoctorDashboard() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   const { 
-    patients, 
-    exercises,
-    scheduledTasks, 
-    assignExerciseToPatient,
-    setActiveRole, 
-    setSelectedPatientId 
+    patients, exercises, scheduledTasks, assignExerciseToPatient,
+    setActiveRole, setSelectedPatientId 
   } = useRehab();
+  const { theme, setTheme } = useTheme();
 
-  const [activeTab, setActiveTab] = useState<'roster' | 'library'>('roster');
+  const [activeTab, setActiveTab] = useState<'roster' | 'library' | 'reports'>('roster');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedFilter, setSelectedFilter] = useState<'all' | 'knee' | 'shoulder' | 'acl'>('all');
-  const [notification, setNotification] = useState<string | null>(null);
-
-  React.useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('tab') === 'library') {
-        setActiveTab('library');
-      }
-
-      const handleTabSwitch = (e: Event) => {
-        const customEvt = e as CustomEvent<string>;
-        if (customEvt.detail === 'library') {
-          setActiveTab('library');
-        } else if (customEvt.detail === 'roster') {
-          setActiveTab('roster');
-        }
-      };
-
-      window.addEventListener('switch-doctor-tab', handleTabSwitch);
-      return () => {
-        window.removeEventListener('switch-doctor-tab', handleTabSwitch);
-      };
-    }
-  }, []);
-
-  const [inspectedPatient, setInspectedPatient] = useState<Patient | null>(null);
-  const [showAddExerciseForm, setShowAddExerciseForm] = useState(false);
-  const [selectedExerciseIdToAdd, setSelectedExerciseIdToAdd] = useState('ex-4');
-  const [selectedTimeSlotToAdd, setSelectedTimeSlotToAdd] = useState('Evening 06:00 PM');
-
+  const [viewMode, setViewMode] = useState<'cards' | 'table'>('cards');
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [inspectedPatientId, setInspectedPatientId] = useState<string | null>(null);
+  
   const currentDoctorId = user?.id || 'doc-1';
-  const doctorPatients = patients.filter((p) => p.doctorId === currentDoctorId);
+  const doctorPatients = useMemo(() => patients.filter((p) => p.doctorId === currentDoctorId), [patients, currentDoctorId]);
+  const doctorTasks = useMemo(() => scheduledTasks.filter((t) => t.doctorId === currentDoctorId), [scheduledTasks, currentDoctorId]);
+  
+  const activePatients = doctorPatients.length;
+  const completedTasks = doctorTasks.filter((t) => t.status === 'completed').length;
+  const adherenceRate = doctorTasks.length > 0 ? Math.round((completedTasks / doctorTasks.length) * 100) : 0;
+  
+  const needsAttention = useMemo(() => doctorPatients.filter(p => {
+    const pTasks = doctorTasks.filter(t => t.patientId === p.id);
+    if(pTasks.length === 0) return false;
+    const completed = pTasks.filter(t => t.status === 'completed').length;
+    const rate = completed / pTasks.length;
+    return rate < 0.5 || (p as any).lastPainScore || 0 > 6;
+  }), [doctorPatients, doctorTasks]);
 
-  const doctorTasks = scheduledTasks.filter((t) => t.doctorId === currentDoctorId);
-  const doctorCompleted = doctorTasks.filter((t) => t.status === 'completed').length;
-  const doctorCompliance = doctorTasks.length > 0 ? Math.round((doctorCompleted / doctorTasks.length) * 100) : 0;
+  const filteredPatients = useMemo(() => {
+    return doctorPatients.filter(p => {
+      const q = searchQuery.toLowerCase();
+      const matchesSearch = p.name.toLowerCase().includes(q) || p.surgeryType.toLowerCase().includes(q);
+      if (!matchesSearch) return false;
+      if (selectedFilter !== 'all' && !p.surgeryType.toLowerCase().includes(selectedFilter)) return false;
+      return true;
+    });
+  }, [doctorPatients, searchQuery, selectedFilter]);
 
-  const filteredPatients = doctorPatients.filter((patient) => {
-    const matchesSearch = 
-      patient.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      patient.surgeryType.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      patient.accessCode.toLowerCase().includes(searchQuery.toLowerCase());
-
-    if (!matchesSearch) return false;
-
-    if (selectedFilter === 'knee') {
-      return patient.surgeryType.toLowerCase().includes('knee') || patient.surgeryType.toLowerCase().includes('tka');
-    }
-    if (selectedFilter === 'shoulder') {
-      return patient.surgeryType.toLowerCase().includes('shoulder') || patient.surgeryType.toLowerCase().includes('rotator');
-    }
-    if (selectedFilter === 'acl') {
-      return patient.surgeryType.toLowerCase().includes('acl');
-    }
-
-    return true;
-  });
-
-  const handlePatientCreated = (newPatientId: string, credentials?: { accessCode: string; tempPassword: string }) => {
-    const p = patients.find((item) => item.id === newPatientId);
-    const codeNotice = credentials ? ` (Access Code: ${credentials.accessCode})` : '';
-    setNotification(`Successfully registered and prescribed protocol for ${p?.name || 'new patient'}${codeNotice}`);
-    setTimeout(() => setNotification(null), 6000);
-  };
-
-  const handleOpenPatientView = (patientId: string) => {
-    setSelectedPatientId(patientId);
+  const handleOpenPatientView = (id: string) => {
+    setSelectedPatientId(id);
     setActiveRole('patient');
   };
 
-  const handleAssignExercise = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inspectedPatient) return;
-
-    assignExerciseToPatient(
-      inspectedPatient.id,
-      selectedExerciseIdToAdd,
-      selectedTimeSlotToAdd,
-      currentDoctorId
-    );
-
-    const exName = exercises.find((ex) => ex.id === selectedExerciseIdToAdd)?.name || 'Exercise';
-    setNotification(`Dynamically assigned "${exName}" to ${inspectedPatient.name}'s schedule!`);
-    setShowAddExerciseForm(false);
-    setTimeout(() => setNotification(null), 5000);
-  };
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        document.getElementById('global-search')?.focus();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-slate-50/60 pb-16">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 flex flex-col md:flex-row font-sans text-slate-900 dark:text-slate-100 transition-colors">
       
-      {/* Top Banner / Breadcrumb */}
-      <div className="bg-white border-b border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
-                Clinician Oversight Dashboard
-              </h1>
-              <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                Rehabilitation protocol oversight and patient therapy tracking.
-              </p>
+      {/* Sidebar (Desktop) / Bottom Nav (Mobile) */}
+      <aside className={`fixed md:sticky top-0 left-0 z-40 w-64 h-screen bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transition-transform ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
+        <div className="p-6 flex items-center justify-between md:block">
+          <div className="flex items-center space-x-3 cursor-pointer">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20">
+              <Activity className="w-6 h-6" />
             </div>
-
-            {/* "+ Create New Patient" CTA Button */}
-            <div className="flex items-center space-x-3">
-              <button
-                type="button"
-                onClick={() => setIsModalOpen(true)}
-                className="inline-flex items-center space-x-2 px-6 py-3 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-lg shadow-emerald-600/25 transition-all hover:-translate-y-0.5 active:scale-95"
-              >
-                <UserPlus className="w-4 h-4" />
-                <span>+ Create New Patient</span>
-              </button>
-            </div>
+            <span className="text-xl font-extrabold tracking-tight">Rehab<span className="text-emerald-600 dark:text-emerald-400">AI</span></span>
           </div>
-
-          {/* Notification banner */}
-          {notification && (
-            <div className="mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-xs font-semibold text-emerald-800 flex items-center justify-between animate-in fade-in slide-in-from-top-2">
-              <div className="flex items-center space-x-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                <span>{notification}</span>
-              </div>
-              <button 
-                onClick={() => setNotification(null)}
-                className="text-emerald-700 hover:text-emerald-950 font-bold"
-              >
-                ×
-              </button>
-            </div>
-          )}
-
-          {/* 3 Main Stat Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
-            
-            {/* Stat 1: Patients */}
-            <div className="p-4 rounded-2xl bg-gradient-to-r from-blue-50/50 to-white border border-slate-200 border-l-4 border-l-blue-500 shadow-sm flex items-center justify-between transition-all hover:shadow-md">
-              <div>
-                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Patients</p>
-                <div className="flex items-baseline space-x-2 mt-1">
-                  <span className="text-2xl font-extrabold text-slate-900">{doctorPatients.length}</span>
-                  <span className="text-xs font-medium text-blue-600">Active Cohort</span>
-                </div>
-              </div>
-              <div className="w-12 h-12 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
-                <Users className="w-6 h-6" />
-              </div>
-            </div>
-
-            {/* Stat 2: Adherence */}
-            <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-50/50 to-white border border-slate-200 border-l-4 border-l-emerald-500 shadow-sm flex items-center justify-between transition-all hover:shadow-md">
-              <div>
-                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Adherence</p>
-                <div className="flex items-baseline space-x-2 mt-1">
-                  <span className="text-2xl font-extrabold text-slate-900">{doctorCompliance}%</span>
-                  <span className="text-xs font-medium text-emerald-600 flex items-center">
-                    <TrendingUp className="w-3 h-3 mr-0.5" /> High
-                  </span>
-                </div>
-              </div>
-              <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center">
-                <Activity className="w-6 h-6" />
-              </div>
-            </div>
-
-            {/* Stat 3: Tasks */}
-            <div className="p-4 rounded-2xl bg-gradient-to-r from-indigo-50/50 to-white border border-slate-200 border-l-4 border-l-indigo-500 shadow-sm flex items-center justify-between transition-all hover:shadow-md">
-              <div>
-                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Tasks</p>
-                <div className="flex items-baseline space-x-2 mt-1">
-                  <span className="text-2xl font-extrabold text-slate-900">
-                    {doctorCompleted} / {doctorTasks.length}
-                  </span>
-                  <span className="text-xs font-medium text-slate-500">completed</span>
-                </div>
-              </div>
-              <div className="w-12 h-12 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center">
-                <Clock className="w-6 h-6" />
-              </div>
-            </div>
-
-          </div>
-
+          <button className="md:hidden p-2 rounded-lg bg-slate-100 dark:bg-slate-800" onClick={() => setIsMobileMenuOpen(false)}><X className="w-5 h-5"/></button>
         </div>
-      </div>
-
-      {/* Tab Navigation */}
-      <div className="bg-white border-b border-slate-200 sticky top-16 z-30 shadow-xs">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-2 sm:space-x-3 py-2.5 overflow-x-auto">
-            <button
-              type="button"
-              onClick={() => setActiveTab('roster')}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
-                activeTab === 'roster'
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
-            >
-              <Users className="w-4 h-4" />
-              <span>Patient Roster</span>
-              <span className={`text-[11px] px-2 py-0.5 rounded-full font-bold ${
-                activeTab === 'roster' ? 'bg-emerald-700 text-white' : 'bg-slate-200 text-slate-700'
-              }`}>
-                {doctorPatients.length}
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setActiveTab('library')}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
-                activeTab === 'library'
-                  ? 'bg-emerald-600 text-white shadow-xs'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
-              }`}
-            >
-              <Dumbbell className="w-4 h-4" />
-              <span>Exercise Library</span>
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {/* Tab 1: Patient Roster & Analytics */}
-      {activeTab === 'roster' && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         
-        {/* Controls Bar: Search & Category filter */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-          <div className="relative flex-1 max-w-md">
-            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-            <input
-              type="text"
-              placeholder="Search by name, surgery, or access code..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full text-xs sm:text-sm pl-9 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-xs"
-            />
-          </div>
+        <nav className="px-4 py-4 space-y-1">
+          <button onClick={() => setActiveTab('roster')} className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-[14px] font-bold transition-all ${activeTab === 'roster' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}>
+            <Users className="w-5 h-5" /> <span>Patient Roster</span>
+          </button>
+          <button onClick={() => setActiveTab('library')} className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-[14px] font-bold transition-all ${activeTab === 'library' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}>
+            <BookOpen className="w-5 h-5" /> <span>Exercise Library</span>
+          </button>
+          <button onClick={() => setActiveTab('reports')} className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-[14px] font-bold transition-all ${activeTab === 'reports' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}>
+            <TrendingUp className="w-5 h-5" /> <span>Clinical Reports</span>
+          </button>
+        </nav>
+      </aside>
 
-          <div className="flex items-center space-x-2 overflow-x-auto pb-1 sm:pb-0">
-            <span className="text-xs font-semibold text-slate-500 flex items-center space-x-1">
-              <Filter className="w-3.5 h-3.5" />
-              <span>Filter:</span>
-            </span>
-            <button
-              onClick={() => setSelectedFilter('all')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                selectedFilter === 'all'
-                  ? 'bg-slate-900 text-white'
-                  : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'
-              }`}
-            >
-              All ({doctorPatients.length})
+      {/* Main Content Area */}
+      <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
+        {/* Header */}
+        <header className="h-20 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 lg:px-10 shrink-0">
+          <div className="flex items-center space-x-4">
+            <button className="md:hidden p-2 -ml-2 text-slate-500 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsMobileMenuOpen(true)}>
+              <Menu className="w-6 h-6" />
             </button>
-            <button
-              onClick={() => setSelectedFilter('knee')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                selectedFilter === 'knee'
-                  ? 'bg-emerald-600 text-white'
-                  : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'
-              }`}
-            >
-              Knee
-            </button>
-            <button
-              onClick={() => setSelectedFilter('shoulder')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                selectedFilter === 'shoulder'
-                  ? 'bg-emerald-600 text-white'
-                  : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'
-              }`}
-            >
-              Shoulder
-            </button>
-            <button
-              onClick={() => setSelectedFilter('acl')}
-              className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
-                selectedFilter === 'acl'
-                  ? 'bg-emerald-600 text-white'
-                  : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-100'
-              }`}
-            >
-              ACL
-            </button>
+            <h1 className="text-xl md:text-2xl font-bold tracking-tight hidden sm:block">
+              {activeTab === 'roster' && 'Dashboard Overview'}
+              {activeTab === 'library' && 'Exercise Protocols'}
+              {activeTab === 'reports' && 'Clinical Outcomes'}
+            </h1>
           </div>
-        </div>
-
-        {/* List of Patients created by this doctor */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h2 className="text-base font-bold text-slate-900">
-              Patients Linked to You ({filteredPatients.length})
-            </h2>
-            <span className="text-xs text-slate-500 hidden sm:block">
-              Click any card to inspect compliance & dynamically assign exercises
-            </span>
-          </div>
-
-          {filteredPatients.length === 0 ? (
-            <div className="p-12 text-center bg-white rounded-2xl border border-slate-200">
-              <Users className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-              <p className="text-sm font-semibold text-slate-700">No patients found for this doctor account.</p>
-              <p className="text-xs text-slate-500 mt-1">Click "+ Create New Patient" above to assign your first patient.</p>
+          
+          <div className="flex items-center space-x-3 sm:space-x-5">
+            {/* Global Search */}
+            <div className="relative hidden md:block w-64 lg:w-80 group">
+              <SearchIcon className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors" />
+              <input 
+                id="global-search" type="text" placeholder="Search patients (Cmd+K)..." 
+                value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full h-10 pl-10 pr-4 bg-slate-100 dark:bg-slate-800/50 border border-transparent focus:bg-white dark:focus:bg-slate-900 focus:border-emerald-500/50 rounded-xl text-[14px] placeholder-slate-400 transition-all focus:ring-4 focus:ring-emerald-500/10 focus:outline-none"
+              />
             </div>
-          ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {filteredPatients.map((patient) => {
-                const patientTasks = scheduledTasks.filter((t) => t.patientId === patient.id);
-                const completedCount = patientTasks.filter((t) => t.status === 'completed').length;
-                const totalCount = patientTasks.length;
-                const patientCompliance = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
-                return (
-                  <div
-                    key={patient.id}
-                    onClick={() => setInspectedPatient(patient)}
-                    className="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm hover:shadow-xl hover:border-emerald-300 transition-all cursor-pointer flex flex-col justify-between group"
-                  >
-                    <div>
-                      {/* Patient Card Top */}
-                      <div className="flex flex-row items-start justify-between mb-4">
-                        <div className="flex flex-col">
-                          <div className="flex items-center space-x-2.5">
-                            {/* EMR Status Indicator */}
-                            {patientCompliance < 50 ? (
-                              <span className="relative flex h-3 w-3">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
-                              </span>
-                            ) : (
-                              <span className="h-3 w-3 rounded-full bg-emerald-500"></span>
-                            )}
-                            <h3 className="text-xl sm:text-2xl font-extrabold text-slate-900 group-hover:text-emerald-600 transition-colors">
-                              {patient.name}
-                            </h3>
-                            <span className="text-sm font-semibold text-slate-500 hidden sm:inline-block">Age {patient.age}</span>
-                          </div>
-                          <p className="text-xs font-semibold text-emerald-700 mt-1 ml-5">
-                            {patient.surgeryType}
-                          </p>
-                        </div>
-
-                        {/* ID Pill */}
-                        <div className="flex flex-col items-end">
-                          <span className="px-2.5 py-1 rounded-full bg-slate-100 text-slate-500 text-[10px] font-mono font-bold tracking-widest border border-slate-200">
-                            ID: {patient.accessCode}
-                          </span>
-                          <span className="text-[11px] font-medium text-slate-400 mt-1.5">
-                            Week {patient.recoveryWeek} Post-Op
-                          </span>
-                        </div>
-                      </div>
-
-                      {/* Caregiver & Language */}
-                      <div className="p-3 bg-slate-50/80 rounded-xl flex flex-wrap items-center justify-between gap-2 text-xs text-slate-600 mb-5 border border-slate-100">
-                        <div className="flex items-center space-x-1.5">
-                          <Phone className="w-3.5 h-3.5 text-slate-400" />
-                          <span className="font-medium">{patient.caregiverContact}</span>
-                        </div>
-                        <div className="flex items-center space-x-1.5">
-                          <Globe className="w-3.5 h-3.5 text-slate-400" />
-                          <span className="font-semibold text-slate-700">{patient.language}</span>
-                        </div>
-                      </div>
-
-                      {/* Assigned Routines List */}
-                      <div>
-                        <div className="flex items-center justify-between mb-1.5">
-                          <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                            Assigned Prescriptions ({patientTasks.length})
-                          </span>
-                          <span className="text-xs font-medium text-slate-500">
-                            Adherence: <strong className="text-slate-800">{completedCount}/{totalCount}</strong> ({patientCompliance}%)
-                          </span>
-                        </div>
-
-                        {/* Progress Bar (EMR Sleek) */}
-                        <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden mb-4 border border-slate-200/50">
-                          <div
-                            className={`h-full transition-all duration-500 ${
-                              patientCompliance >= 50 ? 'bg-emerald-500' : 'bg-amber-500'
-                            }`}
-                            style={{ width: `${patientCompliance}%` }}
-                          />
-                        </div>
-
-                        {/* Routine items chips */}
-                        <div className="space-y-2.5">
-                          {patientTasks.length === 0 ? (
-                            <p className="text-xs text-slate-400 italic px-1">No exercises assigned yet.</p>
-                          ) : (
-                            patientTasks.map((task) => {
-                              const isMorning = task.timeSlot.toLowerCase().includes('morning');
-                              const isEvening = task.timeSlot.toLowerCase().includes('evening') || task.timeSlot.toLowerCase().includes('night');
-                              
-                              return (
-                              <div
-                                key={task.id}
-                                className="flex items-center justify-between p-3 rounded-xl bg-slate-50 border border-slate-100/80 text-xs transition-colors hover:bg-slate-100/60"
-                              >
-                                <div className="flex items-center space-x-3">
-                                  {isMorning ? (
-                                    <Sun className="w-4 h-4 text-amber-500 flex-shrink-0" />
-                                  ) : isEvening ? (
-                                    <Moon className="w-4 h-4 text-indigo-400 flex-shrink-0" />
-                                  ) : (
-                                    <Clock className="w-4 h-4 text-slate-400 flex-shrink-0" />
-                                  )}
-                                  <div>
-                                    <span className="font-bold text-slate-800">{task.exerciseName}</span>
-                                    <span className="text-slate-500 ml-1.5 font-medium">
-                                      ({task.targetReps} reps)
-                                    </span>
-                                  </div>
-                                </div>
-
-                                <div className="flex items-center">
-                                  <span className={`text-[9px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded-full ${
-                                    task.status === 'completed'
-                                      ? 'bg-emerald-100 text-emerald-700'
-                                      : 'bg-amber-100 text-amber-700'
-                                  }`}>
-                                    {task.status}
-                                  </span>
-                                </div>
-                              </div>
-                            )})
-                          )}
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Footer Actions */}
-                    <div className="mt-5 pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
-                      <span className="text-slate-500 font-medium group-hover:text-emerald-600 transition-colors">
-                        Click card to inspect & manage
-                      </span>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleOpenPatientView(patient.id);
-                        }}
-                        className="inline-flex items-center space-x-1 font-bold text-slate-700 hover:text-emerald-700 py-1.5 px-3 rounded-lg hover:bg-emerald-50 transition"
-                      >
-                        <span>Preview Patient Portal</span>
-                        <ChevronRight className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </div>
-
-      </div>
-      )}
-
-      {/* Exercise Library View */}
-      {activeTab === 'library' && (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
-          <ExerciseLibrary />
-        </div>
-      )}
-
-      {/* Inspected Patient Detail Drawer / Modal */}
-      {inspectedPatient && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/60 backdrop-blur-sm animate-in fade-in duration-200">
-          <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden my-8">
+            <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="w-10 h-10 rounded-full flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
+              {theme === 'dark' ? <Sun className="w-5 h-5"/> : <Moon className="w-5 h-5"/>}
+            </button>
             
-            {/* Modal Header */}
-            <div className="bg-gradient-to-r from-emerald-600 to-teal-700 text-white px-6 py-5 flex items-center justify-between">
-              <div>
-                <div className="flex items-center space-x-2">
-                  <h3 className="text-xl font-bold">{inspectedPatient.name}</h3>
-                  <span className="px-2 py-0.5 rounded-full bg-white/20 text-white text-xs font-mono font-bold">
-                    {inspectedPatient.accessCode}
-                  </span>
-                </div>
-                <p className="text-xs text-emerald-100 mt-0.5">
-                  Procedure: {inspectedPatient.surgeryType} • Week {inspectedPatient.recoveryWeek} Post-Op
-                </p>
+            <div className="flex items-center space-x-3 pl-3 sm:pl-5 border-l border-slate-200 dark:border-slate-800">
+              <div className="hidden sm:block text-right">
+                <p className="text-[14px] font-bold leading-tight">{user?.name}</p>
+                <p className="text-[12px] font-medium text-slate-500 dark:text-slate-400">{user?.specialization || 'Orthopedic Surgeon'}</p>
               </div>
-              <button
-                type="button"
-                onClick={() => { setInspectedPatient(null); setShowAddExerciseForm(false); }}
-                className="p-1 rounded-lg hover:bg-white/10 text-white transition"
-              >
-                <X className="w-5 h-5" />
+              <button onClick={logout} className="w-10 h-10 rounded-xl bg-slate-900 dark:bg-emerald-600 text-white flex items-center justify-center font-bold text-sm shadow-md transition-transform hover:scale-105" title="Logout">
+                <LogOut className="w-4 h-4" />
               </button>
             </div>
+          </div>
+        </header>
 
-            {/* Modal Body */}
-            <div className="p-6 space-y-6 max-h-[calc(80vh-6rem)] overflow-y-auto">
-              
-              {/* Patient Live Compliance Summary */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                <div className="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                  <span className="text-[10px] font-bold uppercase text-slate-400">Total Exercises</span>
-                  <p className="text-lg font-bold text-slate-900 mt-0.5">
-                    {scheduledTasks.filter((t) => t.patientId === inspectedPatient.id).length} Prescribed
-                  </p>
-                </div>
-
-                <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200">
-                  <span className="text-[10px] font-bold uppercase text-emerald-700">Completed Today</span>
-                  <p className="text-lg font-bold text-emerald-800 mt-0.5">
-                    {scheduledTasks.filter((t) => t.patientId === inspectedPatient.id && t.status === 'completed').length} Sessions
-                  </p>
-                </div>
-
-                <div className="p-3 rounded-xl bg-blue-50 border border-blue-200 col-span-2 sm:col-span-1">
-                  <span className="text-[10px] font-bold uppercase text-blue-700">Caregiver Contact</span>
-                  <p className="text-xs font-bold text-blue-900 truncate mt-0.5">
-                    {inspectedPatient.caregiverContact}
-                  </p>
-                </div>
-              </div>
-
-              {/* Assigned Exercise List for Inspected Patient */}
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-700">
-                    Assigned Therapy Schedule
-                  </h4>
-                  <button
-                    type="button"
-                    onClick={() => setShowAddExerciseForm(!showAddExerciseForm)}
-                    className="inline-flex items-center space-x-1.5 text-xs font-bold text-emerald-600 hover:text-emerald-800"
-                  >
-                    <PlusCircle className="w-4 h-4" />
-                    <span>+ Add New Exercise</span>
-                  </button>
-                </div>
-
-                {/* Inline Exercise Assignment Form */}
-                {showAddExerciseForm && (
-                  <form onSubmit={handleAssignExercise} className="p-4 rounded-2xl bg-emerald-50/70 border border-emerald-200 space-y-3 mb-4 animate-in fade-in">
-                    <h5 className="text-xs font-bold text-emerald-900">Assign Additional Exercise (Real-Time Sync)</h5>
-                    
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                      <div>
-                        <label className="block text-[11px] font-semibold text-slate-700 mb-1">Select Exercise</label>
-                        <select
-                          value={selectedExerciseIdToAdd}
-                          onChange={(e) => setSelectedExerciseIdToAdd(e.target.value)}
-                          className="w-full text-xs p-2 rounded-xl border border-slate-300 bg-white"
-                        >
-                          {exercises.map((ex) => (
-                            <option key={ex.id} value={ex.id}>
-                              {ex.name} ({ex.targetReps} reps)
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="block text-[11px] font-semibold text-slate-700 mb-1">Scheduled Time Slot</label>
-                        <select
-                          value={selectedTimeSlotToAdd}
-                          onChange={(e) => setSelectedTimeSlotToAdd(e.target.value)}
-                          className="w-full text-xs p-2 rounded-xl border border-slate-300 bg-white"
-                        >
-                          <option value="Morning 08:30 AM">Morning 08:30 AM</option>
-                          <option value="Morning 10:00 AM">Morning 10:00 AM</option>
-                          <option value="Afternoon 02:00 PM">Afternoon 02:00 PM</option>
-                          <option value="Evening 06:00 PM">Evening 06:00 PM</option>
-                          <option value="Night 08:30 PM">Night 08:30 PM</option>
-                        </select>
-                      </div>
+        {/* Scrollable Body */}
+        <div className="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-950 p-6 lg:p-10">
+          <div className="max-w-[1440px] mx-auto space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            
+            {activeTab === 'roster' && (
+              <>
+                {/* KPI Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
+                  <div className="bg-white dark:bg-slate-900 p-5 rounded-[20px] border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+                    <div className="flex justify-between items-start mb-2">
+                      <p className="text-[13px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Active Patients</p>
+                      <div className="p-2 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-lg"><Users className="w-4 h-4"/></div>
                     </div>
-
-                    <div className="flex justify-end space-x-2 pt-1">
-                      <button
-                        type="button"
-                        onClick={() => setShowAddExerciseForm(false)}
-                        className="px-3 py-1.5 rounded-lg border border-slate-300 text-xs font-semibold text-slate-600 hover:bg-slate-100"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="submit"
-                        className="inline-flex items-center space-x-1.5 px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs"
-                      >
-                        <Send className="w-3.5 h-3.5" />
-                        <span>Push to Patient Schedule Now</span>
-                      </button>
+                    <div className="flex items-end space-x-2">
+                      <h3 className="text-3xl font-extrabold">{activePatients}</h3>
+                      <span className="text-[13px] font-semibold text-emerald-600 dark:text-emerald-400 flex items-center mb-1"><ArrowUpRight className="w-3 h-3 mr-0.5"/> 2 this week</span>
                     </div>
-                  </form>
+                  </div>
+
+                  <div className="bg-white dark:bg-slate-900 p-5 rounded-[20px] border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+                    <div className="flex justify-between items-start mb-2">
+                      <p className="text-[13px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Cohort Adherence</p>
+                      <div className="p-2 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-lg"><TrendingUp className="w-4 h-4"/></div>
+                    </div>
+                    <div className="flex items-end space-x-2">
+                      <h3 className="text-3xl font-extrabold">{adherenceRate}%</h3>
+                      {adherenceRate >= 80 ? (
+                        <span className="text-[13px] font-semibold text-emerald-600 dark:text-emerald-400 flex items-center mb-1"><ArrowUpRight className="w-3 h-3 mr-0.5"/> Excellent</span>
+                      ) : (
+                        <span className="text-[13px] font-semibold text-amber-600 dark:text-amber-500 flex items-center mb-1"><ArrowDownRight className="w-3 h-3 mr-0.5"/> Warning</span>
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="bg-white dark:bg-slate-900 p-5 rounded-[20px] border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+                    <div className="flex justify-between items-start mb-2">
+                      <p className="text-[13px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Needs Attention</p>
+                      <div className="p-2 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 rounded-lg"><AlertCircle className="w-4 h-4"/></div>
+                    </div>
+                    <div className="flex items-end space-x-2">
+                      <h3 className="text-3xl font-extrabold text-red-600 dark:text-red-400">{needsAttention.length}</h3>
+                      <span className="text-[13px] font-semibold text-slate-500 dark:text-slate-400 mb-1">patients at risk</span>
+                    </div>
+                  </div>
+
+                  <div className="bg-white dark:bg-slate-900 p-5 rounded-[20px] border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+                    <div className="flex justify-between items-start mb-2">
+                      <p className="text-[13px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Sessions Today</p>
+                      <div className="p-2 bg-teal-50 dark:bg-teal-500/10 text-teal-600 dark:text-teal-400 rounded-lg"><CheckCircle2 className="w-4 h-4"/></div>
+                    </div>
+                    <div className="flex items-end space-x-2">
+                      <h3 className="text-3xl font-extrabold">{completedTasks}</h3>
+                      <span className="text-[13px] font-semibold text-emerald-600 dark:text-emerald-400 flex items-center mb-1"><ArrowUpRight className="w-3 h-3 mr-0.5"/> 14%</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Needs Attention Panel */}
+                {needsAttention.length > 0 && (
+                  <div className="bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/50 rounded-[24px] p-6">
+                    <h3 className="text-[16px] font-bold text-red-800 dark:text-red-400 flex items-center mb-4"><AlertCircle className="w-5 h-5 mr-2"/> Clinical Attention Required</h3>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+                      {needsAttention.map(p => (
+                        <div key={p.id} className="bg-white dark:bg-slate-900 border border-red-200 dark:border-red-900/40 rounded-xl p-4 shadow-sm flex justify-between items-center cursor-pointer hover:border-red-300 dark:hover:border-red-800 transition-colors" onClick={() => setInspectedPatientId(p.id)}>
+                          <div className="flex items-center space-x-3">
+                            <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 font-bold flex items-center justify-center text-sm shrink-0">
+                              {p.name.split(' ').map(n=>n[0]).join('')}
+                            </div>
+                            <div>
+                              <p className="text-[14px] font-bold text-slate-900 dark:text-white">{p.name}</p>
+                              <div className="flex items-center space-x-2 mt-0.5">
+                                <span className="text-[11px] font-bold px-2 py-0.5 bg-red-100 dark:bg-red-900/50 text-red-700 dark:text-red-300 rounded uppercase tracking-wider">{(p as any).lastPainScore || 0 > 6 ? 'High Pain' : 'Low Adherence'}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <ChevronRight className="w-5 h-5 text-slate-400" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 )}
 
-                {/* Existing Tasks */}
-                <div className="space-y-2">
-                  {scheduledTasks
-                    .filter((t) => t.patientId === inspectedPatient.id)
-                    .map((task) => (
-                      <div
-                        key={task.id}
-                        className="p-3 rounded-xl border border-slate-200 bg-white flex items-center justify-between text-xs"
-                      >
-                        <div className="flex items-center space-x-3">
-                          {task.status === 'completed' ? (
-                            <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
-                          ) : (
-                            <Clock className="w-4 h-4 text-amber-500 flex-shrink-0" />
-                          )}
-                          <div>
-                            <span className="font-bold text-slate-900">{task.exerciseName}</span>
-                            <span className="text-slate-500 ml-2 font-normal">
-                              Target: {task.targetReps} reps • {task.timeSlot}
-                            </span>
+                {/* Filters & Actions Header */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                  <div className="flex flex-wrap items-center gap-2">
+                    {['all', 'knee', 'shoulder', 'acl'].map((f) => (
+                      <button key={f} onClick={() => setSelectedFilter(f as any)} className={`px-4 py-2 rounded-full text-[13px] font-bold transition-all shadow-sm ${selectedFilter === f ? 'bg-emerald-600 text-white shadow-emerald-500/25' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}>
+                        {f === 'all' ? 'All Patients' : f.charAt(0).toUpperCase() + f.slice(1)}
+                      </button>
+                    ))}
+                  </div>
+                  
+                  <div className="flex items-center gap-3">
+                    <button onClick={() => setIsModalOpen(true)} className="flex items-center space-x-2 px-5 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-full text-[14px] font-bold hover:scale-105 transition-transform shadow-md">
+                      <PlusCircle className="w-4 h-4" /> <span>Create Prescription</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* Patient Roster Grid */}
+                {filteredPatients.length === 0 ? (
+                  <div className="text-center py-24 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[24px] border-dashed">
+                    <Users className="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-4" />
+                    <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">No patients found</h3>
+                    <p className="text-[14px] text-slate-500 dark:text-slate-400 max-w-md mx-auto mb-6">You don't have any patients matching this filter criteria.</p>
+                    <button onClick={() => setIsModalOpen(true)} className="px-6 py-2.5 bg-emerald-600 text-white rounded-xl text-[14px] font-bold shadow-md hover:bg-emerald-500 transition-colors">
+                      Create your first patient
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {filteredPatients.map((p) => {
+                      const pTasks = doctorTasks.filter(t => t.patientId === p.id);
+                      const comp = pTasks.filter(t => t.status === 'completed').length;
+                      const rate = pTasks.length > 0 ? (comp / pTasks.length) : 0;
+                      
+                      let statusText = 'On Track';
+                      let statusColors = 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border-emerald-200/50 dark:border-emerald-500/20';
+                      if (rate < 0.5) { statusText = 'At Risk'; statusColors = 'bg-red-50 dark:bg-red-500/10 text-red-700 dark:text-red-400 border-red-200/50 dark:border-red-500/20'; }
+                      else if (rate < 0.8) { statusText = 'Review'; statusColors = 'bg-amber-50 dark:bg-amber-500/10 text-amber-700 dark:text-amber-400 border-amber-200/50 dark:border-amber-500/20'; }
+
+                      return (
+                        <div key={p.id} onClick={() => setInspectedPatientId(p.id)} className="bg-white dark:bg-slate-900 rounded-[20px] border border-slate-200 dark:border-slate-800 p-5 shadow-sm hover:shadow-md hover:border-emerald-300 dark:hover:border-emerald-700 transition-all cursor-pointer group flex flex-col h-full">
+                          
+                          <div className="flex justify-between items-start mb-4">
+                            <div className="flex items-center space-x-3">
+                              <div className="w-12 h-12 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center font-bold text-slate-600 dark:text-slate-300 shrink-0">
+                                {p.name.split(' ').map(n=>n[0]).join('')}
+                              </div>
+                              <div>
+                                <h3 className="text-[15px] font-bold text-slate-900 dark:text-white leading-tight">{p.name}</h3>
+                                <p className="text-[12px] text-slate-500 dark:text-slate-400 font-medium mt-0.5">{p.surgeryType}</p>
+                              </div>
+                            </div>
+                            <button className="text-slate-400 group-hover:text-emerald-500 transition-colors"><MoreVertical className="w-5 h-5"/></button>
+                          </div>
+                          
+                          <div className="flex items-center space-x-2 mb-4">
+                            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">Week 3 Post-Op</span>
+                            <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${statusColors}`}>{statusText}</span>
+                          </div>
+
+                          <div className="mt-auto space-y-4">
+                            <div className="flex justify-between items-end">
+                              <div>
+                                <p className="text-[12px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Adherence</p>
+                                <p className="text-xl font-extrabold text-slate-900 dark:text-white">{Math.round(rate * 100)}%</p>
+                              </div>
+                              <div className="w-12 h-12 relative flex items-center justify-center">
+                                <svg className="w-full h-full -rotate-90 transform">
+                                  <circle cx="24" cy="24" r="20" className="text-slate-100 dark:text-slate-800" strokeWidth="4" stroke="currentColor" fill="none" />
+                                  <circle cx="24" cy="24" r="20" className={rate >= 0.8 ? 'text-emerald-500' : rate >= 0.5 ? 'text-amber-500' : 'text-red-500'} strokeWidth="4" strokeDasharray={125} strokeDashoffset={125 - (125 * rate)} strokeLinecap="round" stroke="currentColor" fill="none" />
+                                </svg>
+                              </div>
+                            </div>
+
+                            <div className="pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-[12px] text-slate-500 dark:text-slate-400 font-medium">
+                              <span className="flex items-center"><Calendar className="w-3.5 h-3.5 mr-1.5"/> Last session: 2h ago</span>
+                            </div>
                           </div>
                         </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </>
+            )}
 
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${
-                          task.status === 'completed'
-                            ? 'bg-emerald-100 text-emerald-800'
-                            : 'bg-amber-100 text-amber-800'
-                        }`}>
-                          {task.status}
-                        </span>
-                      </div>
-                    ))}
-                </div>
+            {activeTab === 'library' && (
+              <div className="bg-white dark:bg-slate-900 rounded-[24px] border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
+                <ExerciseLibrary />
               </div>
-
-            </div>
-
-            {/* Footer */}
-            <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
-              <span className="text-xs text-slate-500 font-mono">
-                Doctor ID: {inspectedPatient.doctorId} • Patient ID: {inspectedPatient.id}
-              </span>
-              <button
-                type="button"
-                onClick={() => {
-                  handleOpenPatientView(inspectedPatient.id);
-                  setInspectedPatient(null);
-                }}
-                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold shadow-xs transition"
-              >
-                Open in Patient Portal
-              </button>
-            </div>
+            )}
+            
+            {activeTab === 'reports' && (
+              <div className="text-center py-24 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[24px]">
+                <TrendingUp className="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-4" />
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Clinical Reports coming soon</h3>
+                <p className="text-[14px] text-slate-500 dark:text-slate-400 max-w-md mx-auto">Advanced cohort analytics and outcome reporting are being built.</p>
+              </div>
+            )}
 
           </div>
         </div>
+      </main>
+
+      {/* Patient Drawer (Inspection) */}
+      {inspectedPatientId && (
+        <>
+          <div className="fixed inset-0 bg-slate-900/20 dark:bg-slate-950/60 backdrop-blur-sm z-50 animate-in fade-in" onClick={() => setInspectedPatientId(null)} />
+          <div className="fixed right-0 top-0 h-screen w-full max-w-md bg-white dark:bg-slate-900 shadow-2xl z-50 border-l border-slate-200 dark:border-slate-800 animate-in slide-in-from-right duration-300 flex flex-col">
+            
+            {(() => {
+              const p = patients.find(x => x.id === inspectedPatientId);
+              if (!p) return null;
+              
+              const pTasks = doctorTasks.filter(t => t.patientId === p.id);
+              const comp = pTasks.filter(t => t.status === 'completed').length;
+              const rate = pTasks.length > 0 ? (comp / pTasks.length) : 0;
+              
+              return (
+                <>
+                  <div className="p-6 border-b border-slate-200 dark:border-slate-800 flex items-start justify-between bg-slate-50 dark:bg-slate-900/50 shrink-0">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-14 h-14 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center font-bold text-lg text-slate-700 dark:text-slate-300">
+                        {p.name.split(' ').map(n=>n[0]).join('')}
+                      </div>
+                      <div>
+                        <h2 className="text-xl font-bold text-slate-900 dark:text-white leading-tight">{p.name}</h2>
+                        <p className="text-[13px] text-slate-500 dark:text-slate-400 font-medium">{p.surgeryType}</p>
+                      </div>
+                    </div>
+                    <button onClick={() => setInspectedPatientId(null)} className="p-2 bg-white dark:bg-slate-800 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-white shadow-sm border border-slate-200 dark:border-slate-700"><X className="w-5 h-5"/></button>
+                  </div>
+                  
+                  <div className="flex-1 overflow-y-auto p-6 space-y-8">
+                    {/* Metrics */}
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <p className="text-[12px] font-bold text-slate-500 uppercase tracking-wider mb-1">Adherence</p>
+                        <p className={`text-2xl font-extrabold ${rate >= 0.8 ? 'text-emerald-600' : rate >= 0.5 ? 'text-amber-500' : 'text-red-500'}`}>{Math.round(rate * 100)}%</p>
+                      </div>
+                      <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <p className="text-[12px] font-bold text-slate-500 uppercase tracking-wider mb-1">Pain Score</p>
+                        <p className="text-2xl font-extrabold text-slate-900 dark:text-white">{(p as any).lastPainScore || 0} <span className="text-sm font-medium text-slate-500">/10</span></p>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="text-[14px] font-bold text-slate-900 dark:text-white mb-4 uppercase tracking-wider flex items-center"><Activity className="w-4 h-4 mr-2"/> Range of Motion</h4>
+                      <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+                        <div className="flex justify-between text-[13px] font-medium text-slate-600 dark:text-slate-400 mb-2"><span>Knee Flexion</span> <span>95° / Target 120°</span></div>
+                        <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
+                          <div className="bg-emerald-500 h-2 rounded-full w-[79%]" />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <h4 className="text-[14px] font-bold text-slate-900 dark:text-white mb-4 uppercase tracking-wider flex items-center"><BookOpen className="w-4 h-4 mr-2"/> Active Prescription</h4>
+                      <div className="space-y-3">
+                        {pTasks.length === 0 ? <p className="text-sm text-slate-500">No active exercises.</p> : pTasks.map((t, idx) => {
+                          const ex = exercises.find(e => e.id === t.exerciseId);
+                          return (
+                            <div key={idx} className="p-3 border border-slate-200 dark:border-slate-800 rounded-xl flex items-center justify-between">
+                              <div className="flex items-center space-x-3">
+                                <div className="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0"><Dumbbell className="w-5 h-5"/></div>
+                                <div>
+                                  <p className="text-[13px] font-bold text-slate-900 dark:text-white leading-tight">{ex?.name}</p>
+                                  <p className="text-[11px] text-slate-500">{t.targetReps} reps · {t.targetSets} sets</p>
+                                </div>
+                              </div>
+                              {t.status === 'completed' ? <CheckCircle2 className="w-5 h-5 text-emerald-500"/> : <Clock className="w-5 h-5 text-slate-300"/>}
+                            </div>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div className="p-6 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0 grid grid-cols-2 gap-4">
+                    <button onClick={() => { setInspectedPatientId(null); handleOpenPatientView(p.id); }} className="px-4 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-bold text-[13px] hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center justify-center"><Eye className="w-4 h-4 mr-2"/> View Portal</button>
+                    <button className="px-4 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-bold text-[13px] hover:scale-105 transition shadow-md flex items-center justify-center"><MessageSquare className="w-4 h-4 mr-2"/> Message</button>
+                  </div>
+                </>
+              )
+            })()}
+          </div>
+        </>
       )}
 
-      {/* Create Patient Modal instance */}
-      <CreatePatientModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onSuccess={handlePatientCreated}
-      />
+      {isModalOpen && (
+        <CreatePatientModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
+      )}
     </div>
   );
 }

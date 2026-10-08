@@ -71,14 +71,14 @@ Please keep this safe. Contact Caregiver (${caregiverContact}) if assistance is 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/70 backdrop-blur-sm animate-in fade-in duration-200">
       <div 
-        className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden"
+        className="relative w-full max-w-lg bg-white dark:bg-slate-800 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden"
         role="dialog"
         aria-modal="true"
       >
         {/* Top Header */}
         <div className="bg-gradient-to-r from-emerald-600 to-teal-700 text-white px-6 py-5 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-white/20 backdrop-blur-md flex items-center justify-center text-white">
+            <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-800/20 backdrop-blur-md flex items-center justify-center text-white">
               <Key className="w-5 h-5" />
             </div>
             <div>
@@ -89,7 +89,7 @@ Please keep this safe. Contact Caregiver (${caregiverContact}) if assistance is 
           <button
             type="button"
             onClick={onClose}
-            className="p-1 rounded-lg hover:bg-white/10 text-white/80 hover:text-white transition"
+            className="p-1 rounded-lg hover:bg-white dark:bg-slate-800/10 text-white/80 hover:text-white transition"
           >
             <X className="w-5 h-5" />
           </button>
@@ -109,19 +109,19 @@ Please keep this safe. Contact Caregiver (${caregiverContact}) if assistance is 
           <div className="space-y-3">
             
             {/* Access Code */}
-            <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   6-Digit Patient Access Code
                 </span>
-                <p className="text-lg font-black font-mono text-slate-900 tracking-wider mt-0.5">
+                <p className="text-lg font-black font-mono text-slate-900 dark:text-white tracking-wider mt-0.5">
                   {accessCode}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={handleCopyCode}
-                className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-100 shadow-xs transition"
+                className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 hover:bg-slate-100 shadow-xs transition"
               >
                 {copiedCode ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copiedCode ? 'Copied' : 'Copy Code'}</span>
@@ -129,19 +129,19 @@ Please keep this safe. Contact Caregiver (${caregiverContact}) if assistance is 
             </div>
 
             {/* Temporary Password */}
-            <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between">
+            <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 flex items-center justify-between">
               <div>
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   Temporary Password
                 </span>
-                <p className="text-base font-bold font-mono text-slate-900 mt-0.5">
+                <p className="text-base font-bold font-mono text-slate-900 dark:text-white mt-0.5">
                   {tempPassword}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={handleCopyPassword}
-                className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-700 hover:bg-slate-100 shadow-xs transition"
+                className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 hover:bg-slate-100 shadow-xs transition"
               >
                 {copiedPass ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copiedPass ? 'Copied' : 'Copy'}</span>
@@ -151,9 +151,9 @@ Please keep this safe. Contact Caregiver (${caregiverContact}) if assistance is 
           </div>
 
           {/* Formatted Message Preview */}
-          <div className="p-3 bg-slate-100 rounded-xl text-xs text-slate-600 font-mono space-y-1">
-            <p className="font-semibold text-slate-800">Quick SMS / WhatsApp Message Template:</p>
-            <p className="text-[11px] text-slate-500 truncate">
+          <div className="p-3 bg-slate-100 rounded-xl text-xs text-slate-600 dark:text-slate-400 font-mono space-y-1">
+            <p className="font-semibold text-slate-800 dark:text-slate-200">Quick SMS / WhatsApp Message Template:</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
               {messageText.split('\n')[0]} Access Code: {accessCode}
             </p>
           </div>
@@ -172,7 +172,7 @@ Please keep this safe. Contact Caregiver (${caregiverContact}) if assistance is 
             <button
               type="button"
               onClick={handleTestLogin}
-              className="w-full inline-flex items-center justify-center space-x-2 py-2.5 px-4 rounded-xl border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs font-semibold transition"
+              className="w-full inline-flex items-center justify-center space-x-2 py-2.5 px-4 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 hover:bg-slate-50 dark:bg-slate-900 text-xs font-semibold transition"
             >
               <span>Test Direct Login as This Patient</span>
               <ArrowRight className="w-3.5 h-3.5" />

@@ -85,7 +85,7 @@ export function PatientDashboard() {
   if (!currentPatient) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-16 text-center">
-        <p className="text-slate-500">No patient record linked to this account.</p>
+        <p className="text-slate-500 dark:text-slate-400">No patient record linked to this account.</p>
       </div>
     );
   }
@@ -113,7 +113,7 @@ export function PatientDashboard() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] bg-slate-50/70 pb-20">
+    <div className="min-h-[calc(100vh-4rem)] bg-slate-50 dark:bg-slate-900/70 pb-20">
       
       {/* 1. Patient Profile Summary Bar & Recovery Score */}
       <section className="bg-gradient-to-r from-emerald-50 to-white border-b border-emerald-100">
@@ -132,7 +132,7 @@ export function PatientDashboard() {
 
                 <div className="flex-1">
                   <div className="flex flex-wrap items-center gap-3">
-                    <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+                    <h1 className="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                       {currentPatient.name}
                     </h1>
                     <span className="text-xs font-bold px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200 flex items-center space-x-1 shadow-sm">
@@ -140,11 +140,11 @@ export function PatientDashboard() {
                       <span>Recovery Week {currentPatient.recoveryWeek} Post-Op</span>
                     </span>
                     {!isPatientLoggedIn && (
-                      <div className="flex items-center space-x-2 bg-white/80 p-1.5 rounded-xl border border-slate-200 shadow-xs">
+                      <div className="flex items-center space-x-2 bg-white dark:bg-slate-800/80 p-1.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-xs">
                         <select
                           value={effectivePatientId}
                           onChange={(e) => setSelectedPatientId(e.target.value)}
-                          className="text-xs font-bold bg-transparent px-2 py-0.5 text-slate-800 focus:outline-none"
+                          className="text-xs font-bold bg-transparent px-2 py-0.5 text-slate-800 dark:text-slate-200 focus:outline-none"
                         >
                           {patients.map((p) => (
                             <option key={p.id} value={p.id}>View: {p.name}</option>
@@ -161,7 +161,7 @@ export function PatientDashboard() {
                   </p>
 
                   {/* Cleaned up Info Grid (2-column on desktop) */}
-                  <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-slate-700 bg-white/60 p-4 rounded-2xl border border-emerald-100/50 backdrop-blur-sm">
+                  <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-slate-700 bg-white dark:bg-slate-800/60 p-4 rounded-2xl border border-emerald-100/50 backdrop-blur-sm">
                     <div className="flex items-center space-x-3">
                       <Activity className="w-4 h-4 text-teal-600" />
                       <span><strong>Procedure:</strong> {currentPatient.surgeryType}</span>
@@ -189,11 +189,11 @@ export function PatientDashboard() {
                     <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                     <span>Today's Prescribed Routine Adherence</span>
                   </span>
-                  <span className="text-slate-900">
+                  <span className="text-slate-900 dark:text-white">
                     {completedTasks} of {totalTasks} Sessions ({progressPercent}%)
                   </span>
                 </div>
-                <div className="w-full h-3 bg-white border border-emerald-100 rounded-full overflow-hidden shadow-inner">
+                <div className="w-full h-3 bg-white dark:bg-slate-800 border border-emerald-100 rounded-full overflow-hidden shadow-inner">
                   <div
                     className={`h-full transition-all duration-1000 ease-out rounded-full ${
                       progressPercent === 100
@@ -209,12 +209,12 @@ export function PatientDashboard() {
             </div>
 
             {/* Right Col: Recovery Score Card */}
-            <div className="bg-white rounded-3xl p-6 border border-emerald-100 shadow-xl shadow-emerald-900/5 flex flex-col items-center justify-center relative overflow-hidden">
+            <div className="bg-white dark:bg-slate-800 rounded-3xl p-6 border border-emerald-100 shadow-xl shadow-emerald-900/5 flex flex-col items-center justify-center relative overflow-hidden">
               <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-teal-400 to-emerald-500"></div>
               
               <div className="flex items-center space-x-2 mb-4">
                 <Trophy className="w-5 h-5 text-amber-500" />
-                <h3 className="text-sm font-extrabold text-slate-800 uppercase tracking-widest">Recovery Score</h3>
+                <h3 className="text-sm font-extrabold text-slate-800 dark:text-slate-200 uppercase tracking-widest">Recovery Score</h3>
               </div>
               
               <div className="relative flex items-center justify-center mb-2">
@@ -223,12 +223,12 @@ export function PatientDashboard() {
                     <circle cx="50%" cy="50%" r="46%" className="stroke-current text-emerald-500" strokeWidth="8" fill="transparent" strokeDasharray="289" strokeDashoffset="46" strokeLinecap="round" />
                   </svg>
                   <div className="flex flex-col items-center z-10">
-                    <span className="text-4xl font-black text-slate-900 tracking-tighter">84</span>
+                    <span className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter">84</span>
                   </div>
                 </div>
               </div>
               
-              <p className="text-[10px] text-center text-slate-500 font-bold px-4 mb-5 uppercase tracking-wider">
+              <p className="text-[10px] text-center text-slate-500 dark:text-slate-400 font-bold px-4 mb-5 uppercase tracking-wider">
                 Based on adherence & AI analytics
               </p>
 
@@ -257,7 +257,7 @@ export function PatientDashboard() {
       </section>
 
       {/* Tab Navigation: Schedule vs Exercise Library */}
-      <div className="bg-white border-b border-slate-200 sticky top-16 z-30 shadow-xs">
+      <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-16 z-30 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-2 sm:space-x-3 py-2.5 overflow-x-auto">
             <button
@@ -266,7 +266,7 @@ export function PatientDashboard() {
               className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
                 activeTab === 'schedule'
                   ? 'bg-emerald-600 text-white shadow-md'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-white hover:bg-slate-100'
               }`}
             >
               <CalendarDays className="w-4 h-4" />
@@ -284,7 +284,7 @@ export function PatientDashboard() {
               className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
                 activeTab === 'library'
                   ? 'bg-emerald-600 text-white shadow-md'
-                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-white hover:bg-slate-100'
               }`}
             >
               <Dumbbell className="w-4 h-4" />
@@ -305,7 +305,7 @@ export function PatientDashboard() {
               <Flame className="w-4 h-4" />
               <span>Next Action Required</span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 mt-1">
+            <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
               Your Daily Routine for {todayFormatted}
             </h2>
           </div>
@@ -313,10 +313,10 @@ export function PatientDashboard() {
 
         {/* Schedule Cards / Time Grid */}
         {isolatedTasks.length === 0 ? (
-          <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center shadow-sm">
+          <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 p-12 text-center shadow-sm">
             <Calendar className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-            <h3 className="text-lg font-bold text-slate-800">No Exercises Scheduled</h3>
-            <p className="text-sm text-slate-500 max-w-sm mx-auto mt-2">
+            <h3 className="text-lg font-bold text-slate-800 dark:text-slate-200">No Exercises Scheduled</h3>
+            <p className="text-sm text-slate-500 dark:text-slate-400 max-w-sm mx-auto mt-2">
               You are all caught up! Your clinician has not scheduled any sessions for today.
             </p>
           </div>
@@ -331,10 +331,10 @@ export function PatientDashboard() {
               return (
                 <div
                   key={task.id}
-                  className={`relative bg-white rounded-3xl transition-all duration-300 p-5 sm:p-6 shadow-sm overflow-hidden ${
+                  className={`relative bg-white dark:bg-slate-800 rounded-3xl transition-all duration-300 p-5 sm:p-6 shadow-sm overflow-hidden ${
                     isCompleted
-                      ? 'border border-slate-200 opacity-75 bg-slate-50/50 grayscale-[20%]'
-                      : 'border-l-8 border-emerald-500 border-y border-r border-slate-200 hover:shadow-lg'
+                      ? 'border border-slate-200 dark:border-slate-700 opacity-75 bg-slate-50 dark:bg-slate-900/50 grayscale-[20%]'
+                      : 'border-l-8 border-emerald-500 border-y border-r border-slate-200 dark:border-slate-700 hover:shadow-lg'
                   }`}
                 >
                   <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
@@ -343,16 +343,16 @@ export function PatientDashboard() {
                     <div className="flex items-center space-x-5 flex-1">
                       
                       {/* Scheduled Time Slot Badge */}
-                      <div className="hidden sm:flex flex-col items-center justify-center w-28 py-3 rounded-2xl bg-slate-100 border border-slate-200 text-slate-800 flex-shrink-0">
+                      <div className="hidden sm:flex flex-col items-center justify-center w-28 py-3 rounded-2xl bg-slate-100 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 flex-shrink-0">
                         <Clock className="w-4 h-4 text-emerald-600 mb-1" />
-                        <span className="text-xs font-black text-slate-900 text-center leading-tight">
+                        <span className="text-xs font-black text-slate-900 dark:text-white text-center leading-tight">
                           {task.timeSlot}
                         </span>
-                        <span className="text-[10px] text-slate-500 font-bold mt-1 uppercase">Session {index + 1}</span>
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold mt-1 uppercase">Session {index + 1}</span>
                       </div>
 
                       {/* Thumbnail Image */}
-                      <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden flex-shrink-0 shadow-sm border border-slate-200">
+                      <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl overflow-hidden flex-shrink-0 shadow-sm border border-slate-200 dark:border-slate-700">
                         <img 
                           src={thumbUrl} 
                           alt={task.exerciseName} 
@@ -363,7 +363,7 @@ export function PatientDashboard() {
                       {/* Exercise Name & Target Reps/Sets */}
                       <div className="flex-1">
                         <div className="flex flex-wrap items-center gap-3">
-                          <h3 className={`text-lg sm:text-xl font-extrabold ${isCompleted ? 'text-slate-700' : 'text-slate-900'}`}>
+                          <h3 className={`text-lg sm:text-xl font-extrabold ${isCompleted ? 'text-slate-700' : 'text-slate-900 dark:text-white'}`}>
                             {task.exerciseName}
                           </h3>
                           
@@ -371,7 +371,7 @@ export function PatientDashboard() {
                           <span
                             className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-[10px] uppercase tracking-wider font-black ${
                               isCompleted
-                                ? 'bg-slate-200 text-slate-600'
+                                ? 'bg-slate-200 text-slate-600 dark:text-slate-400'
                                 : 'bg-emerald-100 text-emerald-800 border border-emerald-200 animate-pulse'
                             }`}
                           >
@@ -398,7 +398,7 @@ export function PatientDashboard() {
                             Sets: {task.targetSets || 3}
                           </span>
                           {task.completedAt && (
-                            <span className="text-xs text-slate-500 font-semibold flex items-center space-x-1">
+                            <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold flex items-center space-x-1">
                               <CheckCircle2 className="w-3 h-3 text-emerald-500" />
                               <span>Logged at {task.completedAt}</span>
                             </span>
@@ -417,7 +417,7 @@ export function PatientDashboard() {
                         onClick={() => handleStartSession(task)}
                         className={`inline-flex items-center justify-center space-x-2 px-6 py-4 rounded-2xl font-black text-sm transition-all duration-300 w-full sm:w-auto ${
                           isCompleted
-                            ? 'border-2 border-slate-300 text-slate-600 hover:bg-slate-100'
+                            ? 'border-2 border-slate-300 text-slate-600 dark:text-slate-400 hover:bg-slate-100'
                             : 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-xl shadow-emerald-600/30 hover:-translate-y-1'
                         }`}
                       >
@@ -438,7 +438,7 @@ export function PatientDashboard() {
                       <button
                         type="button"
                         onClick={() => toggleTaskStatus(task.id)}
-                        className="text-[10px] font-bold text-slate-400 hover:text-slate-600 underline text-center sm:text-right"
+                        className="text-[10px] font-bold text-slate-400 hover:text-slate-600 dark:text-slate-400 underline text-center sm:text-right"
                       >
                         {isCompleted ? 'Mark as pending' : 'Quick mark as done (skip video)'}
                       </button>
@@ -453,12 +453,12 @@ export function PatientDashboard() {
         )}
 
         {/* Post-Op Safety Note Callout */}
-        <div className="mt-8 p-5 rounded-2xl bg-white border border-blue-100 shadow-sm flex items-start space-x-4 text-xs sm:text-sm text-slate-600">
+        <div className="mt-8 p-5 rounded-2xl bg-white dark:bg-slate-800 border border-blue-100 shadow-sm flex items-start space-x-4 text-xs sm:text-sm text-slate-600 dark:text-slate-400">
           <div className="p-2 bg-blue-50 rounded-full flex-shrink-0">
             <Info className="w-5 h-5 text-blue-600" />
           </div>
           <div className="leading-relaxed mt-0.5">
-            <strong className="text-slate-800">Safety Notice:</strong> If you experience sharp, sudden pain or excessive swelling during your session, immediately stop and contact your care team at <strong className="text-blue-700">{currentPatient.caregiverContact}</strong>.
+            <strong className="text-slate-800 dark:text-slate-200">Safety Notice:</strong> If you experience sharp, sudden pain or excessive swelling during your session, immediately stop and contact your care team at <strong className="text-blue-700">{currentPatient.caregiverContact}</strong>.
           </div>
         </div>
 

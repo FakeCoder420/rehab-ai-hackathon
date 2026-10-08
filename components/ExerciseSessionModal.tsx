@@ -109,7 +109,7 @@ export function ExerciseSessionModal({
               className="p-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 transition"
               title={audioEnabled ? 'Mute AI voice cues' : 'Enable AI voice cues'}
             >
-              {audioEnabled ? <Volume2 className="w-4 h-4 text-blue-400" /> : <VolumeX className="w-4 h-4 text-slate-500" />}
+              {audioEnabled ? <Volume2 className="w-4 h-4 text-blue-400" /> : <VolumeX className="w-4 h-4 text-slate-500 dark:text-slate-400" />}
             </button>
             <button
               onClick={onClose}

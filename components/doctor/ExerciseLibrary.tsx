@@ -215,14 +215,14 @@ export function ExerciseLibrary({ onAssignToPatient }: ExerciseLibraryProps) {
       )}
 
       {/* Library Header & Controls */}
-      <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm sticky top-[120px] z-20 space-y-4">
+      <div className="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm sticky top-[120px] z-20 space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div>
-            <h2 className="text-xl font-bold text-slate-900 tracking-tight flex items-center space-x-2">
+            <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center space-x-2">
               <Dumbbell className="w-5 h-5 text-emerald-600" />
               <span>Exercise Library</span>
             </h2>
-            <p className="text-xs text-slate-500 mt-0.5">
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
               Explore {EXERCISES.length} standard clinical protocols and assign them directly to patient routines.
             </p>
           </div>
@@ -234,7 +234,7 @@ export function ExerciseLibrary({ onAssignToPatient }: ExerciseLibraryProps) {
               placeholder="Search exercises..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition-colors"
+              className="w-full pl-9 pr-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 focus:bg-white dark:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 text-sm transition-colors"
             />
           </div>
         </div>
@@ -248,7 +248,7 @@ export function ExerciseLibrary({ onAssignToPatient }: ExerciseLibraryProps) {
               className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-colors whitespace-nowrap ${
                 activeFilter === filter
                   ? 'bg-emerald-600 text-white shadow-sm'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  : 'bg-slate-100 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
               }`}
             >
               {filter}
@@ -261,7 +261,7 @@ export function ExerciseLibrary({ onAssignToPatient }: ExerciseLibraryProps) {
       {filteredExercises.length === 0 ? (
         <div className="py-20 text-center">
           <Dumbbell className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-          <p className="text-slate-600 font-medium">No exercises found matching your search.</p>
+          <p className="text-slate-600 dark:text-slate-400 font-medium">No exercises found matching your search.</p>
           <button 
             onClick={() => { setSearchQuery(''); setActiveFilter('All'); }}
             className="mt-3 text-sm text-emerald-600 font-semibold hover:underline"
@@ -275,12 +275,12 @@ export function ExerciseLibrary({ onAssignToPatient }: ExerciseLibraryProps) {
             <div
               key={exercise.id}
               onClick={() => handleCardClick(exercise)}
-              className="group bg-white rounded-2xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col cursor-pointer relative"
+              className="group bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col cursor-pointer relative"
             >
               {/* Quick Assign Button (Top Right) */}
               <button
                 onClick={(e) => handleQuickAssignClick(e, exercise)}
-                className="absolute top-3 right-3 z-10 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center text-slate-700 shadow-sm hover:bg-emerald-50 hover:text-emerald-700 transition-colors opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0"
+                className="absolute top-3 right-3 z-10 w-8 h-8 bg-white dark:bg-slate-800/90 backdrop-blur-sm rounded-full flex items-center justify-center text-slate-700 shadow-sm hover:bg-emerald-50 hover:text-emerald-700 transition-colors opacity-0 group-hover:opacity-100 translate-y-1 group-hover:translate-y-0"
                 title="Quick Assign"
               >
                 <Plus className="w-4 h-4" />
@@ -295,7 +295,7 @@ export function ExerciseLibrary({ onAssignToPatient }: ExerciseLibraryProps) {
                   loading="lazy"
                 />
                 <div className="absolute inset-0 bg-slate-900/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
-                  <span className="px-3 py-1.5 rounded-full bg-white/95 text-slate-900 font-bold text-xs shadow-md flex items-center space-x-1.5 transform scale-95 group-hover:scale-100 transition-transform">
+                  <span className="px-3 py-1.5 rounded-full bg-white dark:bg-slate-800/95 text-slate-900 dark:text-white font-bold text-xs shadow-md flex items-center space-x-1.5 transform scale-95 group-hover:scale-100 transition-transform">
                     <Play className="w-3.5 h-3.5 fill-current text-emerald-600" />
                     <span>View Details</span>
                   </span>
@@ -306,7 +306,7 @@ export function ExerciseLibrary({ onAssignToPatient }: ExerciseLibraryProps) {
               <div className="p-5 flex-1 flex flex-col justify-between">
                 <div>
                   <div className="flex items-start justify-between gap-2 mb-3">
-                    <h3 className="font-extrabold text-slate-900 text-base leading-snug group-hover:text-emerald-700 transition-colors">
+                    <h3 className="font-extrabold text-slate-900 dark:text-white text-base leading-snug group-hover:text-emerald-700 transition-colors">
                       {exercise.title}
                     </h3>
                     <span className={`shrink-0 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${getJointBadgeColor(exercise.joint)}`}>
@@ -314,7 +314,7 @@ export function ExerciseLibrary({ onAssignToPatient }: ExerciseLibraryProps) {
                     </span>
                   </div>
 
-                  <p className="text-xs text-slate-600 leading-relaxed font-medium">
+                  <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
                     {exercise.short_desc}
                   </p>
                 </div>
@@ -340,12 +340,12 @@ export function ExerciseLibrary({ onAssignToPatient }: ExerciseLibraryProps) {
           }}
         >
           {/* Centered White Box */}
-          <div className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden max-h-[90vh] flex flex-col">
+          <div className="relative w-full max-w-2xl bg-white dark:bg-slate-800 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden max-h-[90vh] flex flex-col">
             
             {/* Modal Header with Title & Close (X) button */}
-            <div className="px-6 py-5 border-b border-slate-200 flex items-center justify-between bg-white">
+            <div className="px-6 py-5 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between bg-white dark:bg-slate-800">
               <div className="flex items-center space-x-3">
-                <h3 className="text-lg sm:text-xl font-extrabold text-slate-900">
+                <h3 className="text-lg sm:text-xl font-extrabold text-slate-900 dark:text-white">
                   {selectedExercise.title}
                 </h3>
                 <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold border ${getJointBadgeColor(selectedExercise.joint)}`}>
@@ -363,15 +363,15 @@ export function ExerciseLibrary({ onAssignToPatient }: ExerciseLibraryProps) {
             </div>
 
             {/* Modal Body */}
-            <div className="p-6 overflow-y-auto space-y-5 bg-slate-50/50">
+            <div className="p-6 overflow-y-auto space-y-5 bg-slate-50 dark:bg-slate-900/50">
               
               {/* Short Description */}
-              <p className="text-sm text-slate-600 font-medium leading-relaxed">
+              <p className="text-sm text-slate-600 dark:text-slate-400 font-medium leading-relaxed">
                 {selectedExercise.short_desc}
               </p>
 
               {/* Embedded YouTube iframe using video_url */}
-              <div className="w-full aspect-video rounded-2xl overflow-hidden bg-black shadow-md border border-slate-200">
+              <div className="w-full aspect-video rounded-2xl overflow-hidden bg-black shadow-md border border-slate-200 dark:border-slate-700">
                 <iframe
                   src={selectedExercise.video_url}
                   title={selectedExercise.title}
@@ -382,8 +382,8 @@ export function ExerciseLibrary({ onAssignToPatient }: ExerciseLibraryProps) {
               </div>
 
               {/* Important Instructions Section */}
-              <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 mb-3 flex items-center space-x-1.5">
+              <div className="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 mb-3 flex items-center space-x-1.5">
                   <span>Important Instructions</span>
                 </h4>
                 <ul className="space-y-2.5 list-disc list-inside text-sm text-slate-700 font-medium">
@@ -404,7 +404,7 @@ export function ExerciseLibrary({ onAssignToPatient }: ExerciseLibraryProps) {
                   </div>
 
                   {isPatient && currentPatient ? (
-                    <div className="p-3 rounded-xl bg-white border border-emerald-100">
+                    <div className="p-3 rounded-xl bg-white dark:bg-slate-800 border border-emerald-100">
                       <span className="text-[10px] font-bold uppercase tracking-wider text-emerald-700">Recipient Patient</span>
                       <p className="text-sm font-bold text-emerald-900 mt-1">
                         {currentPatient.name} • {currentPatient.surgeryType}
@@ -423,7 +423,7 @@ export function ExerciseLibrary({ onAssignToPatient }: ExerciseLibraryProps) {
                         <select
                           value={selectedPatientId}
                           onChange={(e) => setSelectedPatientId(e.target.value)}
-                          className="w-full text-sm p-3 rounded-xl border border-slate-200 bg-white font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm"
+                          className="w-full text-sm p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm"
                           required
                         >
                           {doctorPatients.map((p) => (
@@ -443,7 +443,7 @@ export function ExerciseLibrary({ onAssignToPatient }: ExerciseLibraryProps) {
                     <select
                       value={selectedTimeSlot}
                       onChange={(e) => setSelectedTimeSlot(e.target.value)}
-                      className="w-full text-sm p-3 rounded-xl border border-slate-200 bg-white font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm"
+                      className="w-full text-sm p-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 shadow-sm"
                     >
                       <option value="Morning 09:00 AM">Morning 09:00 AM</option>
                       <option value="Morning 11:00 AM">Morning 11:00 AM</option>
@@ -457,7 +457,7 @@ export function ExerciseLibrary({ onAssignToPatient }: ExerciseLibraryProps) {
                     <button
                       type="button"
                       onClick={() => setShowAssignForm(false)}
-                      className="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-200/60 transition cursor-pointer"
+                      className="px-4 py-2 rounded-xl text-sm font-semibold text-slate-600 dark:text-slate-400 hover:bg-slate-200/60 transition cursor-pointer"
                     >
                       Cancel
                     </button>
@@ -474,9 +474,9 @@ export function ExerciseLibrary({ onAssignToPatient }: ExerciseLibraryProps) {
             </div>
 
             {/* Modal Footer with "+ Assign to Patient" button */}
-            <div className="px-6 py-5 border-t border-slate-200 bg-white flex items-center justify-between">
+            <div className="px-6 py-5 border-t border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 flex items-center justify-between">
               <span className="text-xs text-slate-400">
-                Exercise ID: <code className="font-mono text-slate-500 font-bold">{selectedExercise.id}</code>
+                Exercise ID: <code className="font-mono text-slate-500 dark:text-slate-400 font-bold">{selectedExercise.id}</code>
               </span>
               
               {!showAssignForm && (

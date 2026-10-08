@@ -65,27 +65,27 @@ export function TrackReportsView({ patients }: TrackReportsViewProps) {
     <div className="space-y-6">
       
       {/* Top Patient Selector Header */}
-      <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center space-x-2 text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">
             <Activity className="w-3.5 h-3.5" />
             <span>Biomechanical & Adherence Analytics</span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight">
+          <h2 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
             Patient Track Reports & Telemetry
           </h2>
-          <p className="text-xs text-slate-500 mt-0.5">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             Real-time visual analog pain curves, Computer Vision joint degrees, and recovery milestones.
           </p>
         </div>
 
         {/* Patient Picker */}
-        <div className="flex items-center space-x-3 bg-slate-50 p-2.5 rounded-2xl border border-slate-200">
-          <span className="text-xs font-bold text-slate-600">Select Patient:</span>
+        <div className="flex items-center space-x-3 bg-slate-50 dark:bg-slate-900 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-700">
+          <span className="text-xs font-bold text-slate-600 dark:text-slate-400">Select Patient:</span>
           <select
             value={selectedPatientId}
             onChange={(e) => setSelectedPatientId(e.target.value)}
-            className="text-xs font-bold bg-white border border-slate-300 rounded-xl px-3 py-1.5 text-slate-800 focus:ring-2 focus:ring-blue-500 shadow-2xs"
+            className="text-xs font-bold bg-white dark:bg-slate-800 border border-slate-300 rounded-xl px-3 py-1.5 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 shadow-2xs"
           >
             {patients.map((p) => (
               <option key={p.id} value={p.id}>
@@ -98,25 +98,25 @@ export function TrackReportsView({ patients }: TrackReportsViewProps) {
 
       {/* KPI Cards Strip */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs">
+        <div className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xs">
           <span className="text-[10px] font-bold uppercase text-slate-400">Current Recovery Week</span>
-          <p className="text-2xl font-black text-slate-900 mt-1">Week {activePatient?.recoveryWeek || 3}</p>
+          <p className="text-2xl font-black text-slate-900 dark:text-white mt-1">Week {activePatient?.recoveryWeek || 3}</p>
           <span className="text-xs text-emerald-600 font-semibold mt-0.5 block">Surgical: {activePatient?.surgeryType.split('(')[0]}</span>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs">
+        <div className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xs">
           <span className="text-[10px] font-bold uppercase text-slate-400">Pain Index Trend (VAS)</span>
           <p className="text-2xl font-black text-emerald-600 mt-1">2.1 <span className="text-xs font-normal text-slate-400">/ 10</span></p>
           <span className="text-xs text-emerald-600 font-semibold mt-0.5 block">-74% reduction since Day 1</span>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs">
+        <div className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xs">
           <span className="text-[10px] font-bold uppercase text-slate-400">Peak ROM Articulation</span>
           <p className="text-2xl font-black text-blue-600 mt-1">96° <span className="text-xs font-normal text-slate-400">flexion</span></p>
           <span className="text-xs text-blue-600 font-semibold mt-0.5 block">Target 90° achieved</span>
         </div>
 
-        <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-xs">
+        <div className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-xs">
           <span className="text-[10px] font-bold uppercase text-slate-400">AI Pose Estimation Accuracy</span>
           <p className="text-2xl font-black text-indigo-600 mt-1">97.8%</p>
           <span className="text-xs text-indigo-600 font-semibold mt-0.5 block">33 Keypoint Tracking Confidence</span>
@@ -127,14 +127,14 @@ export function TrackReportsView({ patients }: TrackReportsViewProps) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
         {/* Chart 1: Joint Range of Motion (ROM) & Pain Reduction Curves */}
-        <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-xs">
+        <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 p-6 shadow-xs">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-sm font-bold text-slate-900 flex items-center space-x-2">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center space-x-2">
                 <TrendingUp className="w-4 h-4 text-blue-600" />
                 <span>Range of Motion (ROM) vs. Pain Curve (VAS)</span>
               </h3>
-              <p className="text-xs text-slate-500 mt-0.5">Dual-axis progression over 18 post-op days</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Dual-axis progression over 18 post-op days</p>
             </div>
             <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
               Optimal Recovery
@@ -159,14 +159,14 @@ export function TrackReportsView({ patients }: TrackReportsViewProps) {
         </div>
 
         {/* Chart 2: Daily Exercise Session Cadence */}
-        <div className="bg-white rounded-3xl border border-slate-200 p-6 shadow-xs">
+        <div className="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 p-6 shadow-xs">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h3 className="text-sm font-bold text-slate-900 flex items-center space-x-2">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white flex items-center space-x-2">
                 <Target className="w-4 h-4 text-emerald-600" />
                 <span>Weekly Prescription Adherence Cadence</span>
               </h3>
-              <p className="text-xs text-slate-500 mt-0.5">Prescribed vs. Completed daily exercise sessions</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Prescribed vs. Completed daily exercise sessions</p>
             </div>
             <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
               92% Weekly Rate

@@ -12,7 +12,7 @@ function RehabAppContent() {
   const { activeRole } = useRehab();
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950">
       <Navbar />
       
       <main className="flex-1">
@@ -22,7 +22,7 @@ function RehabAppContent() {
       </main>
 
       {/* Clinical Grade Footer */}
-      <footer className="border-t border-slate-200 bg-white py-6">
+      <footer className="border-t border-slate-200 dark:border-slate-700 bg-white py-6">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <div className="flex items-center space-x-2">
             <HeartPulse className="w-4 h-4 text-blue-600" />

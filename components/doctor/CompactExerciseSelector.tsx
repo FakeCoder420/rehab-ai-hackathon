@@ -55,7 +55,7 @@ export function CompactExerciseSelector({
     <div className="space-y-3.5">
       
       {/* 1-Click Protocol Preset Header Row (Requirement 2) */}
-      <div className="p-3 bg-slate-50 border border-slate-200 rounded-2xl">
+      <div className="p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
           <div className="flex items-center space-x-1.5 text-xs font-bold text-slate-700">
             <Sparkles className="w-3.5 h-3.5 text-amber-500" />
@@ -94,7 +94,7 @@ export function CompactExerciseSelector({
       </div>
 
       {/* Selected Counter & Guidance */}
-      <div className="flex items-center justify-between text-xs text-slate-500 px-1">
+      <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 px-1">
         <span>Check exercises to customize rep cadence & schedule slots:</span>
         <span className="font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
           {selectedExerciseIds.length} Selected
@@ -102,7 +102,7 @@ export function CompactExerciseSelector({
       </div>
 
       {/* Compact Scrollable List of Exercises */}
-      <div className="max-h-72 overflow-y-auto space-y-2.5 pr-1 border border-slate-200 rounded-2xl p-2 bg-white">
+      <div className="max-h-72 overflow-y-auto space-y-2.5 pr-1 border border-slate-200 dark:border-slate-700 rounded-2xl p-2 bg-white dark:bg-slate-800">
         {exercises.map((exercise) => {
           const isSelected = selectedExerciseIds.includes(exercise.id);
           const config = prescriptionConfigs[exercise.id] || {
@@ -117,7 +117,7 @@ export function CompactExerciseSelector({
               className={`rounded-xl border transition-all duration-150 overflow-hidden ${
                 isSelected
                   ? 'border-blue-400 bg-blue-50/40 shadow-2xs'
-                  : 'border-slate-200 bg-white hover:border-slate-300'
+                  : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-slate-300'
               }`}
             >
               {/* Exercise Row Header */}
@@ -136,12 +136,12 @@ export function CompactExerciseSelector({
 
                   <div>
                     <div className="flex items-center space-x-2">
-                      <span className="text-xs font-bold text-slate-900">{exercise.name}</span>
-                      <span className="text-[10px] font-semibold px-2 py-0.2 rounded bg-slate-100 text-slate-600">
+                      <span className="text-xs font-bold text-slate-900 dark:text-white">{exercise.name}</span>
+                      <span className="text-[10px] font-semibold px-2 py-0.2 rounded bg-slate-100 text-slate-600 dark:text-slate-400">
                         {exercise.category}
                       </span>
                     </div>
-                    <p className="text-[11px] text-slate-500 mt-0.5">
+                    <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                       {exercise.targetAngle || '0° - 90°'} • Benchmark: {exercise.targetReps} reps × {exercise.targetSets} sets
                     </p>
                   </div>
@@ -163,7 +163,7 @@ export function CompactExerciseSelector({
                     
                     {/* Control 1: Target Reps */}
                     <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1 flex items-center space-x-1">
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1 flex items-center space-x-1">
                         <Target className="w-3 h-3 text-blue-600" />
                         <span>Target Reps</span>
                       </label>
@@ -173,13 +173,13 @@ export function CompactExerciseSelector({
                         max="100"
                         value={config.reps}
                         onChange={(e) => onUpdateConfig(exercise.id, { reps: Number(e.target.value) || 1 })}
-                        className="w-full text-xs font-bold px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-900 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        className="w-full text-xs font-bold px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
                       />
                     </div>
 
                     {/* Control 2: Target Sets */}
                     <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1 flex items-center space-x-1">
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1 flex items-center space-x-1">
                         <Layers className="w-3 h-3 text-indigo-600" />
                         <span>Target Sets</span>
                       </label>
@@ -189,20 +189,20 @@ export function CompactExerciseSelector({
                         max="20"
                         value={config.sets}
                         onChange={(e) => onUpdateConfig(exercise.id, { sets: Number(e.target.value) || 1 })}
-                        className="w-full text-xs font-bold px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-900 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        className="w-full text-xs font-bold px-2.5 py-1.5 rounded-lg border border-slate-300 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
                       />
                     </div>
 
                     {/* Control 3: Time Slot Picker */}
                     <div>
-                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-600 mb-1 flex items-center space-x-1">
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 mb-1 flex items-center space-x-1">
                         <Clock className="w-3 h-3 text-emerald-600" />
                         <span>Daily Time Slot</span>
                       </label>
                       <select
                         value={config.timeSlot}
                         onChange={(e) => onUpdateConfig(exercise.id, { timeSlot: e.target.value })}
-                        className="w-full text-xs font-medium px-2 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-800 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                        className="w-full text-xs font-medium px-2 py-1.5 rounded-lg border border-slate-300 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-blue-500 focus:outline-none"
                       >
                         {COMMON_SLOTS.map((slot) => (
                           <option key={slot} value={slot}>

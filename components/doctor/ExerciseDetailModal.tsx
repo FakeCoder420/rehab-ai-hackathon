@@ -42,7 +42,7 @@ export function ExerciseDetailModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-slate-950/70 backdrop-blur-md animate-in fade-in duration-200">
       <div 
-        className="relative w-full max-w-3xl bg-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden my-6 flex flex-col max-h-[90vh]"
+        className="relative w-full max-w-3xl bg-white dark:bg-slate-800 rounded-3xl shadow-2xl border border-slate-200 dark:border-slate-700 overflow-hidden my-6 flex flex-col max-h-[90vh]"
         role="dialog"
         aria-modal="true"
       >
@@ -66,7 +66,7 @@ export function ExerciseDetailModal({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-xl hover:bg-white/10 text-slate-300 hover:text-white transition"
+            className="p-1.5 rounded-xl hover:bg-white dark:bg-slate-800/10 text-slate-300 hover:text-white transition"
           >
             <X className="w-5 h-5" />
           </button>
@@ -116,7 +116,7 @@ export function ExerciseDetailModal({
                 <div className="flex items-center space-x-2">
                   <button
                     onClick={() => setIsPlaying(!isPlaying)}
-                    className="p-1.5 rounded-lg bg-white/10 hover:bg-white/20 text-white transition"
+                    className="p-1.5 rounded-lg bg-white dark:bg-slate-800/10 hover:bg-white dark:bg-slate-800/20 text-white transition"
                     title={isPlaying ? 'Pause simulation' : 'Play simulation'}
                   >
                     {isPlaying ? <Pause className="w-3.5 h-3.5" /> : <Play className="w-3.5 h-3.5" />}
@@ -126,7 +126,7 @@ export function ExerciseDetailModal({
                     className={`px-2 py-1 rounded-lg text-[10px] font-semibold border transition ${
                       showSkeleton 
                         ? 'bg-cyan-500/20 border-cyan-500/50 text-cyan-300' 
-                        : 'bg-white/5 border-slate-700 text-slate-400'
+                        : 'bg-white dark:bg-slate-800/5 border-slate-700 text-slate-400'
                     }`}
                   >
                     Skeleton Overlay: {showSkeleton ? 'ON' : 'OFF'}
@@ -151,28 +151,28 @@ export function ExerciseDetailModal({
 
           {/* Clinical Benchmarks Matrix */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200">
+            <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
               <span className="text-[10px] font-bold uppercase text-slate-400 flex items-center space-x-1">
                 <Target className="w-3 h-3 text-blue-600 mr-1" />
                 <span>Target Reps</span>
               </span>
-              <p className="text-base font-extrabold text-slate-900 mt-0.5">{exercise.targetReps} Repetitions</p>
+              <p className="text-base font-extrabold text-slate-900 dark:text-white mt-0.5">{exercise.targetReps} Repetitions</p>
             </div>
 
-            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200">
+            <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
               <span className="text-[10px] font-bold uppercase text-slate-400 flex items-center space-x-1">
                 <Layers className="w-3 h-3 text-indigo-600 mr-1" />
                 <span>Target Sets</span>
               </span>
-              <p className="text-base font-extrabold text-slate-900 mt-0.5">{exercise.targetSets} Sets Daily</p>
+              <p className="text-base font-extrabold text-slate-900 dark:text-white mt-0.5">{exercise.targetSets} Sets Daily</p>
             </div>
 
-            <div className="p-3 rounded-2xl bg-slate-50 border border-slate-200">
+            <div className="p-3 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700">
               <span className="text-[10px] font-bold uppercase text-slate-400 flex items-center space-x-1">
                 <Clock className="w-3 h-3 text-emerald-600 mr-1" />
                 <span>Default Slot</span>
               </span>
-              <p className="text-xs font-bold text-slate-900 mt-1 truncate">{exercise.defaultTimeSlot}</p>
+              <p className="text-xs font-bold text-slate-900 dark:text-white mt-1 truncate">{exercise.defaultTimeSlot}</p>
             </div>
 
             <div className="p-3 rounded-2xl bg-blue-50 border border-blue-200">
@@ -211,7 +211,7 @@ export function ExerciseDetailModal({
                 {(exercise.primaryMuscles || ['Quadriceps', 'Joint Stabilizers']).map((muscle, idx) => (
                   <span
                     key={idx}
-                    className="px-2.5 py-1 rounded-lg bg-white border border-indigo-200 text-indigo-900 text-xs font-semibold shadow-2xs"
+                    className="px-2.5 py-1 rounded-lg bg-white dark:bg-slate-800 border border-indigo-200 text-indigo-900 text-xs font-semibold shadow-2xs"
                   >
                     {muscle}
                   </span>
@@ -227,7 +227,7 @@ export function ExerciseDetailModal({
               <Info className="w-3.5 h-3.5 text-blue-600" />
               <span>Step-by-Step Clinical Instructions</span>
             </h4>
-            <p className="text-xs text-slate-600 mb-3 leading-relaxed">
+            <p className="text-xs text-slate-600 dark:text-slate-400 mb-3 leading-relaxed">
               {exercise.instructions}
             </p>
 
@@ -236,12 +236,12 @@ export function ExerciseDetailModal({
                 {exercise.steps.map((step, idx) => (
                   <div
                     key={idx}
-                    className="p-3 rounded-xl bg-slate-50 border border-slate-200/80 text-xs flex items-start space-x-3"
+                    className="p-3 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 text-xs flex items-start space-x-3"
                   >
                     <span className="w-5 h-5 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center text-[10px] flex-shrink-0 mt-0.5">
                       {idx + 1}
                     </span>
-                    <span className="text-slate-800 font-medium leading-relaxed">{step}</span>
+                    <span className="text-slate-800 dark:text-slate-200 font-medium leading-relaxed">{step}</span>
                   </div>
                 ))}
               </div>
@@ -251,7 +251,7 @@ export function ExerciseDetailModal({
         </div>
 
         {/* Modal Footer Actions */}
-        <div className="px-6 py-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between">
+        <div className="px-6 py-4 bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
           <button
             type="button"
             onClick={onClose}

@@ -12,8 +12,11 @@ import {
   LogOut,
   LogIn,
   ShieldCheck,
-  HeartPulse
+  HeartPulse,
+  Sun,
+  Moon
 } from 'lucide-react';
+import { useTheme } from 'next-themes';
 
 export function Navbar() {
   const router = useRouter();
@@ -22,6 +25,12 @@ export function Navbar() {
   } = useRehab();
 
   const { user, isAuthenticated, logout } = useAuth();
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const handleRoleSwitch = (role: 'landing' | 'doctor' | 'patient') => {
     setActiveRole(role);
@@ -35,7 +44,7 @@ export function Navbar() {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full border-b border-slate-200/80 bg-white/80 backdrop-blur-xl">
+    <header className="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-slate-700/80 bg-white dark:bg-slate-800 dark:bg-slate-900/80 dark:bg-slate-950/80 backdrop-blur-xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           
@@ -49,21 +58,31 @@ export function Navbar() {
             </div>
             <div>
               <div className="flex items-center space-x-2">
-                <span className="text-2xl font-extrabold tracking-tight text-slate-900">Rehab<span className="text-emerald-600">AI</span></span>
+                <span className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">Rehab<span className="text-emerald-600">AI</span></span>
                 <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60 hidden sm:inline-block">
                   Clinical Platform
                 </span>
               </div>
-              <p className="text-sm font-medium text-slate-500 hidden sm:block">Post-Surgical Motion Intelligence</p>
+              <p className="text-sm font-medium text-slate-500 dark:text-slate-400 hidden sm:block">Post-Surgical Motion Intelligence</p>
             </div>
           </div>
 
-          {/* User Profile Badge & Logout */}
+          {/* Theme Toggle & User Profile Badge / Logout */}
           <div className="flex items-center space-x-3">
+            {mounted && (
+              <button
+                onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+                className="p-2 sm:px-3 sm:py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 dark:border-slate-700 bg-white dark:bg-slate-800 dark:bg-slate-900 dark:bg-slate-800 text-slate-600 dark:text-slate-400 dark:text-slate-300 hover:bg-slate-50 dark:bg-slate-900 dark:hover:bg-slate-700 transition-all shadow-sm"
+                title="Toggle Dark Mode"
+              >
+                {theme === 'dark' ? <Sun className="w-4 h-4 sm:w-5 sm:h-5" /> : <Moon className="w-4 h-4 sm:w-5 sm:h-5" />}
+              </button>
+            )}
+
             {isAuthenticated && user ? (
               <div className="flex items-center space-x-3 sm:space-x-4">
                 {/* Profile Badge */}
-                <div className="flex items-center space-x-3 px-4 py-2 bg-white border border-slate-200/80 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center space-x-3 px-4 py-2 bg-white dark:bg-slate-800 dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm text-white ${
                     user.role === 'doctor' 
                       ? 'bg-slate-900 shadow-sm shadow-slate-900/20' 
@@ -78,7 +97,7 @@ export function Navbar() {
 
                   <div className="text-left hidden sm:block pr-2">
                     <div className="flex items-center space-x-2">
-                      <span className="text-sm font-bold text-slate-900 leading-tight">
+                      <span className="text-sm font-bold text-slate-900 dark:text-white leading-tight">
                         {user.name}
                       </span>
                       <span className={`text-[10px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded-full ${
@@ -89,7 +108,7 @@ export function Navbar() {
                         {user.role}
                       </span>
                     </div>
-                    <p className="text-xs text-slate-500 font-medium mt-0.5">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">
                       {user.role === 'doctor' 
                         ? (user.specialization || 'Orthopedic Surgery')
                         : (user.patientAccessCode ? `Code: ${user.patientAccessCode}` : 'Patient Portal')}
@@ -101,7 +120,7 @@ export function Navbar() {
                 <button
                   type="button"
                   onClick={logout}
-                  className="inline-flex items-center space-x-2 p-2 sm:px-4 sm:py-2.5 rounded-xl border border-slate-200 text-slate-600 hover:text-red-600 hover:bg-red-50 hover:border-red-200 text-sm font-bold transition-all shadow-sm"
+                  className="inline-flex items-center space-x-2 p-2 sm:px-4 sm:py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:text-red-600 hover:bg-red-50 hover:border-red-200 text-sm font-bold transition-all shadow-sm"
                   title="Logout and terminate secure session"
                 >
                   <LogOut className="w-4 h-4" />

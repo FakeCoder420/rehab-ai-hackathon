@@ -29,12 +29,12 @@ export function ProtectedRoute({
   // Loading state while verifying credentials from localStorage
   if (isLoading) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 bg-slate-50">
+      <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 bg-slate-50 dark:bg-slate-900">
         <div className="w-12 h-12 rounded-2xl bg-blue-600 text-white flex items-center justify-center shadow-lg shadow-blue-500/30 animate-pulse mb-4">
           <Activity className="w-6 h-6 animate-spin" />
         </div>
-        <p className="text-sm font-bold text-slate-800">Verifying Clinical Security Credentials...</p>
-        <p className="text-xs text-slate-500 mt-1">Checking cryptographic session and RBAC permissions</p>
+        <p className="text-sm font-bold text-slate-800 dark:text-slate-200">Verifying Clinical Security Credentials...</p>
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Checking cryptographic session and RBAC permissions</p>
       </div>
     );
   }
@@ -42,12 +42,12 @@ export function ProtectedRoute({
   // Not authenticated
   if (!isAuthenticated || !user) {
     return (
-      <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 bg-slate-50">
+      <div className="min-h-[70vh] flex flex-col items-center justify-center p-6 bg-slate-50 dark:bg-slate-900">
         <div className="w-14 h-14 rounded-2xl bg-amber-100 text-amber-700 flex items-center justify-center mb-4">
           <Lock className="w-7 h-7" />
         </div>
-        <h2 className="text-xl font-bold text-slate-900">Session Required</h2>
-        <p className="text-xs text-slate-600 mt-1 mb-6 max-w-sm text-center">
+        <h2 className="text-xl font-bold text-slate-900 dark:text-white">Session Required</h2>
+        <p className="text-xs text-slate-600 dark:text-slate-400 mt-1 mb-6 max-w-sm text-center">
           You must be logged in to view this medical portal. Redirecting to login...
         </p>
         <button
@@ -67,8 +67,8 @@ export function ProtectedRoute({
     const requiredRoleLabel = allowedRoles.includes('doctor') ? 'Clinician / Doctor' : 'Patient / Caregiver';
 
     return (
-      <div className="min-h-[80vh] flex flex-col items-center justify-center p-6 bg-slate-50">
-        <div className="max-w-md w-full bg-white rounded-3xl border border-red-200 shadow-xl p-8 text-center">
+      <div className="min-h-[80vh] flex flex-col items-center justify-center p-6 bg-slate-50 dark:bg-slate-900">
+        <div className="max-w-md w-full bg-white dark:bg-slate-800 rounded-3xl border border-red-200 shadow-xl p-8 text-center">
           <div className="w-16 h-16 rounded-2xl bg-red-100 text-red-600 mx-auto flex items-center justify-center mb-5 shadow-inner">
             <ShieldAlert className="w-8 h-8" />
           </div>
@@ -77,13 +77,13 @@ export function ProtectedRoute({
             HTTP 403 Forbidden • Access Control Restriction
           </span>
 
-          <h2 className="text-2xl font-black text-slate-900 mt-3 mb-2">
+          <h2 className="text-2xl font-black text-slate-900 dark:text-white mt-3 mb-2">
             Restricted Medical Access
           </h2>
 
-          <p className="text-xs text-slate-600 leading-relaxed mb-6">
+          <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed mb-6">
             Your current session is authenticated as{' '}
-            <strong className="text-slate-900 capitalize font-bold">{user.name} ({user.role})</strong>.
+            <strong className="text-slate-900 dark:text-white capitalize font-bold">{user.name} ({user.role})</strong>.
             This module is strictly guarded and requires <strong className="text-blue-700">{requiredRoleLabel}</strong> authorization.
           </p>
 
@@ -111,7 +111,7 @@ export function ProtectedRoute({
             <button
               type="button"
               onClick={logout}
-              className="w-full inline-flex items-center justify-center space-x-1.5 py-2.5 px-4 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-semibold transition"
+              className="w-full inline-flex items-center justify-center space-x-1.5 py-2.5 px-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-400 text-xs font-semibold transition"
             >
               <LogOut className="w-3.5 h-3.5" />
               <span>Log out and Switch Account</span>

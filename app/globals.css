@@ -24,3 +24,15 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Hackathon Dark Mode Global Overrides */
+.dark body {
+  --background: #020617;
+  --foreground: #f8fafc;
+}
+
+/* Nullify hardcoded layout gradients that clash with dark mode */
+.dark .from-emerald-50\/50, .dark .from-teal-100\/40, .dark .from-emerald-100\/40, .dark .from-slate-50, .dark .via-white, .dark .to-white {
+  background-image: none !important;
+  background-color: transparent !important;
+}
