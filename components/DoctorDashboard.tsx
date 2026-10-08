@@ -123,7 +123,7 @@ export function DoctorDashboard() {
               <input 
                 id="global-search" type="text" placeholder="Search patients (Cmd+K)..." 
                 value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-10 pl-10 pr-4 bg-slate-100 dark:bg-slate-800/50 border border-transparent focus:bg-white dark:focus:bg-slate-900 focus:border-emerald-500/50 rounded-xl text-[14px] placeholder-slate-400 transition-all focus:ring-4 focus:ring-emerald-500/10 focus:outline-none"
+                className="w-full h-10 pl-10 pr-4 bg-slate-100 dark:bg-slate-800/50 border border-transparent focus:bg-white dark:bg-slate-900 dark:focus:bg-slate-900 focus:border-emerald-500/50 rounded-xl text-[14px] placeholder-slate-400 transition-all focus:ring-4 focus:ring-emerald-500/10 focus:outline-none"
               />
             </div>
 
@@ -236,7 +236,7 @@ export function DoctorDashboard() {
                   </div>
                   
                   <div className="flex items-center gap-3">
-                    <button onClick={() => setIsModalOpen(true)} className="flex items-center space-x-2 px-5 py-2.5 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-full text-[14px] font-bold hover:scale-105 transition-transform shadow-md">
+                    <button onClick={() => setIsModalOpen(true)} className="flex items-center space-x-2 px-5 py-2.5 bg-slate-900 dark:bg-white dark:bg-slate-900 text-white dark:text-slate-900 dark:text-white rounded-full text-[14px] font-bold hover:scale-105 transition-transform shadow-md">
                       <PlusCircle className="w-4 h-4" /> <span>Create Prescription</span>
                     </button>
                   </div>
@@ -293,7 +293,7 @@ export function DoctorDashboard() {
                               </div>
                               <div className="w-12 h-12 relative flex items-center justify-center">
                                 <svg className="w-full h-full -rotate-90 transform">
-                                  <circle cx="24" cy="24" r="20" className="text-slate-100 dark:text-slate-800" strokeWidth="4" stroke="currentColor" fill="none" />
+                                  <circle cx="24" cy="24" r="20" className="text-slate-100 dark:text-slate-800 dark:text-slate-200" strokeWidth="4" stroke="currentColor" fill="none" />
                                   <circle cx="24" cy="24" r="20" className={rate >= 0.8 ? 'text-emerald-500' : rate >= 0.5 ? 'text-amber-500' : 'text-red-500'} strokeWidth="4" strokeDasharray={125} strokeDashoffset={125 - (125 * rate)} strokeLinecap="round" stroke="currentColor" fill="none" />
                                 </svg>
                               </div>
@@ -428,7 +428,7 @@ export function DoctorDashboard() {
                   
                   <div className="p-6 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0 grid grid-cols-2 gap-4">
                     <button onClick={() => { setInspectedPatientId(null); handleOpenPatientView(p.id); }} className="px-4 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-bold text-[13px] hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center justify-center"><Eye className="w-4 h-4 mr-2"/> View Portal</button>
-                    <button className="px-4 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 rounded-xl font-bold text-[13px] hover:scale-105 transition shadow-md flex items-center justify-center"><MessageSquare className="w-4 h-4 mr-2"/> Message</button>
+                    <button className="px-4 py-3 bg-slate-900 dark:bg-white dark:bg-slate-900 text-white dark:text-slate-900 dark:text-white rounded-xl font-bold text-[13px] hover:scale-105 transition shadow-md flex items-center justify-center"><MessageSquare className="w-4 h-4 mr-2"/> Message</button>
                   </div>
                 </>
               )

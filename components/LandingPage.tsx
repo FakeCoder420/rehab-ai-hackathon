@@ -110,7 +110,7 @@ export function LandingPage() {
               </div>
 
               {/* Glassmorphism Floating Score Card */}
-              <div className="absolute -bottom-6 -left-6 sm:bottom-8 sm:-left-12 bg-white/10 dark:bg-slate-900/40 backdrop-blur-xl border border-white/20 dark:border-white/10 p-5 rounded-2xl shadow-2xl w-64 transform transition-all duration-700 translate-y-0 opacity-100">
+              <div className="absolute -bottom-6 -left-6 sm:bottom-8 sm:-left-12 bg-white dark:bg-slate-900/10 dark:bg-slate-900/40 backdrop-blur-xl border border-white/20 dark:border-white/10 p-5 rounded-2xl shadow-2xl w-64 transform transition-all duration-700 translate-y-0 opacity-100">
                 <div className="flex justify-between items-start mb-3">
                   <div>
                     <p className="text-xs font-bold text-slate-200 uppercase tracking-wider">Recovery Score</p>
@@ -274,7 +274,7 @@ export function LandingPage() {
           <p className="text-lg text-slate-600 dark:text-slate-400 mb-10 max-w-2xl mx-auto">Join the leading orthopedic clinics using RehabAI to deliver superior post-op outcomes and prevent readmissions.</p>
           <button 
             onClick={handleCTA}
-            className="px-10 py-5 bg-slate-900 dark:bg-white hover:bg-slate-800 dark:hover:bg-slate-100 text-white dark:text-slate-900 rounded-2xl font-bold shadow-xl transition-transform hover:scale-105"
+            className="px-10 py-5 bg-slate-900 dark:bg-white dark:bg-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 text-white dark:text-slate-900 dark:text-white rounded-2xl font-bold shadow-xl transition-transform hover:scale-105"
           >
             Access Clinical Portal
           </button>
