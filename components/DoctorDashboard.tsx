@@ -79,12 +79,7 @@ export function DoctorDashboard() {
       {/* Sidebar (Desktop) / Bottom Nav (Mobile) */}
       <aside className={`fixed md:sticky top-0 left-0 z-40 w-64 h-screen bg-white dark:bg-slate-900 border-r border-slate-200 dark:border-slate-800 transition-transform ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
         <div className="p-6 flex items-center justify-between md:block">
-          <div className="flex items-center space-x-3 cursor-pointer">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white shadow-lg shadow-emerald-500/20">
-              <Activity className="w-6 h-6" />
-            </div>
-            <span className="text-xl font-extrabold tracking-tight">Rehab<span className="text-emerald-600 dark:text-emerald-400">AI</span></span>
-          </div>
+          
           <button className="md:hidden p-2 rounded-lg bg-slate-100 dark:bg-slate-800" onClick={() => setIsMobileMenuOpen(false)}><X className="w-5 h-5"/></button>
         </div>
         
@@ -104,44 +99,7 @@ export function DoctorDashboard() {
       {/* Main Content Area */}
       <main className="flex-1 flex flex-col min-w-0 h-screen overflow-hidden">
         {/* Header */}
-        <header className="h-20 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between px-6 lg:px-10 shrink-0">
-          <div className="flex items-center space-x-4">
-            <button className="md:hidden p-2 -ml-2 text-slate-500 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800" onClick={() => setIsMobileMenuOpen(true)}>
-              <Menu className="w-6 h-6" />
-            </button>
-            <h1 className="text-xl md:text-2xl font-bold tracking-tight hidden sm:block">
-              {activeTab === 'roster' && 'Dashboard Overview'}
-              {activeTab === 'library' && 'Exercise Protocols'}
-              {activeTab === 'reports' && 'Clinical Outcomes'}
-            </h1>
-          </div>
-          
-          <div className="flex items-center space-x-3 sm:space-x-5">
-            {/* Global Search */}
-            <div className="relative hidden md:block w-64 lg:w-80 group">
-              <SearchIcon className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors" />
-              <input 
-                id="global-search" type="text" placeholder="Search patients (Cmd+K)..." 
-                value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full h-10 pl-10 pr-4 bg-slate-100 dark:bg-slate-800/50 border border-transparent focus:bg-white dark:bg-slate-900 dark:focus:bg-slate-900 focus:border-emerald-500/50 rounded-xl text-[14px] placeholder-slate-400 transition-all focus:ring-4 focus:ring-emerald-500/10 focus:outline-none"
-              />
-            </div>
-
-            <button onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')} className="w-10 h-10 rounded-full flex items-center justify-center bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors">
-              {theme === 'dark' ? <Sun className="w-5 h-5"/> : <Moon className="w-5 h-5"/>}
-            </button>
-            
-            <div className="flex items-center space-x-3 pl-3 sm:pl-5 border-l border-slate-200 dark:border-slate-800">
-              <div className="hidden sm:block text-right">
-                <p className="text-[14px] font-bold leading-tight">{user?.name}</p>
-                <p className="text-[12px] font-medium text-slate-500 dark:text-slate-400">{user?.specialization || 'Orthopedic Surgeon'}</p>
-              </div>
-              <button onClick={logout} className="w-10 h-10 rounded-xl bg-slate-900 dark:bg-emerald-600 text-white flex items-center justify-center font-bold text-sm shadow-md transition-transform hover:scale-105" title="Logout">
-                <LogOut className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        </header>
+        
 
         {/* Scrollable Body */}
         <div className="flex-1 overflow-y-auto bg-slate-50 dark:bg-slate-950 p-6 lg:p-10">
@@ -226,17 +184,28 @@ export function DoctorDashboard() {
                 )}
 
                 {/* Filters & Actions Header */}
+<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
+
+                <div className="relative w-full sm:w-64 lg:w-80 group mb-4 sm:mb-0">
+                  <SearchIcon className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-emerald-500 transition-colors" />
+                  <input 
+                    id="global-search" type="text" placeholder="Search patients (Cmd+K)..." 
+                    value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full h-10 pl-10 pr-4 bg-slate-100 dark:bg-slate-800/50 border border-transparent focus:bg-white dark:focus:bg-slate-900 focus:border-emerald-500/50 rounded-xl text-[14px] placeholder-slate-400 transition-all focus:ring-4 focus:ring-emerald-500/10 focus:outline-none"
+                  />
+                </div>
+</div>
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="flex flex-wrap items-center gap-2">
                     {['all', 'knee', 'shoulder', 'acl'].map((f) => (
-                      <button key={f} onClick={() => setSelectedFilter(f as any)} className={`px-4 py-2 rounded-full text-[13px] font-bold transition-all shadow-sm ${selectedFilter === f ? 'bg-emerald-600 text-white shadow-emerald-500/25' : 'bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}>
+                      <button key={f} onClick={() => setSelectedFilter(f as any)} className={`px-4 py-2 rounded-full text-[13px] font-bold transition-all shadow-sm ${selectedFilter === f ? 'bg-emerald-600 text-white shadow-emerald-500/25' : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors'}`}>
                         {f === 'all' ? 'All Patients' : f.charAt(0).toUpperCase() + f.slice(1)}
                       </button>
                     ))}
                   </div>
                   
                   <div className="flex items-center gap-3">
-                    <button onClick={() => setIsModalOpen(true)} className="flex items-center space-x-2 px-5 py-2.5 bg-slate-900 dark:bg-white dark:bg-slate-900 text-white dark:text-slate-900 dark:text-white rounded-full text-[14px] font-bold hover:scale-105 transition-transform shadow-md">
+                    <button onClick={() => setIsModalOpen(true)} className="flex items-center space-x-2 px-5 py-2.5 bg-slate-900 dark:bg-slate-800 text-white dark:text-slate-200 border border-transparent dark:border-slate-700 rounded-full text-[14px] font-bold hover:bg-slate-800 dark:hover:bg-slate-700 hover:scale-105 transition-all shadow-md">
                       <PlusCircle className="w-4 h-4" /> <span>Create Prescription</span>
                     </button>
                   </div>
@@ -293,7 +262,7 @@ export function DoctorDashboard() {
                               </div>
                               <div className="w-12 h-12 relative flex items-center justify-center">
                                 <svg className="w-full h-full -rotate-90 transform">
-                                  <circle cx="24" cy="24" r="20" className="text-slate-100 dark:text-slate-800 dark:text-slate-200" strokeWidth="4" stroke="currentColor" fill="none" />
+                                  <circle cx="24" cy="24" r="20" className="text-slate-100 dark:text-slate-200" strokeWidth="4" stroke="currentColor" fill="none" />
                                   <circle cx="24" cy="24" r="20" className={rate >= 0.8 ? 'text-emerald-500' : rate >= 0.5 ? 'text-amber-500' : 'text-red-500'} strokeWidth="4" strokeDasharray={125} strokeDashoffset={125 - (125 * rate)} strokeLinecap="round" stroke="currentColor" fill="none" />
                                 </svg>
                               </div>
@@ -428,7 +397,7 @@ export function DoctorDashboard() {
                   
                   <div className="p-6 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0 grid grid-cols-2 gap-4">
                     <button onClick={() => { setInspectedPatientId(null); handleOpenPatientView(p.id); }} className="px-4 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-bold text-[13px] hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center justify-center"><Eye className="w-4 h-4 mr-2"/> View Portal</button>
-                    <button className="px-4 py-3 bg-slate-900 dark:bg-white dark:bg-slate-900 text-white dark:text-slate-900 dark:text-white rounded-xl font-bold text-[13px] hover:scale-105 transition shadow-md flex items-center justify-center"><MessageSquare className="w-4 h-4 mr-2"/> Message</button>
+                    <button className="px-4 py-3 bg-slate-900 dark:bg-slate-900 text-white dark:text-white rounded-xl font-bold text-[13px] hover:scale-105 transition shadow-md flex items-center justify-center"><MessageSquare className="w-4 h-4 mr-2"/> Message</button>
                   </div>
                 </>
               )
