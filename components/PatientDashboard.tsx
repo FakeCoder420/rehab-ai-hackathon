@@ -26,7 +26,8 @@ import {
   Dumbbell,
   Trophy,
   Flame,
-  Star
+  Star,
+  X
 } from 'lucide-react';
 import { ExerciseLibrary, EXERCISES } from './doctor/ExerciseLibrary';
 
@@ -42,6 +43,19 @@ export function PatientDashboard() {
 
   const [activeSessionTask, setActiveSessionTask] = useState<ScheduledTask | null>(null);
   const [activeTab, setActiveTab] = useState<'schedule' | 'library'>('schedule');
+
+  const activityHistory = useMemo(() => [
+    { id: 1, date: 'Oct 3', day: 'Tue', status: 'completed', rom: '82°', pain: '4/10', exercises: 2 },
+    { id: 2, date: 'Oct 4', day: 'Wed', status: 'completed', rom: '85°', pain: '3/10', exercises: 3 },
+    { id: 3, date: 'Oct 5', day: 'Thu', status: 'missed', rom: '-', pain: '-', exercises: 0 },
+    { id: 4, date: 'Oct 6', day: 'Fri', status: 'completed', rom: '88°', pain: '3/10', exercises: 2 },
+    { id: 5, date: 'Oct 7', day: 'Sat', status: 'completed', rom: '92°', pain: '2/10', exercises: 3 },
+    { id: 6, date: 'Oct 8', day: 'Sun', status: 'completed', rom: '95°', pain: '2/10', exercises: 2 },
+    { id: 7, date: 'Oct 9', day: 'Mon', status: 'today', rom: 'Pending', pain: '-', exercises: 2 },
+  ], []);
+
+  const [selectedHistory, setSelectedHistory] = useState(activityHistory[5]);
+
 
   React.useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -250,6 +264,92 @@ export function PatientDashboard() {
                 </div>
               </div>
 
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      {/* Recovery Streak & Activity Timeline */}
+      <section className="bg-slate-50 dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 py-6 transition-colors">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          {/* Header & Streak Counter */}
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-sm font-extrabold text-slate-900 dark:text-white uppercase tracking-wider flex items-center space-x-2">
+              <CalendarDays className="w-4 h-4 text-emerald-600" />
+              <span>Activity Timeline</span>
+            </h3>
+            <div className="flex items-center space-x-2 bg-amber-100 dark:bg-amber-900/40 border border-amber-200 dark:border-amber-800/60 px-3 py-1.5 rounded-full shadow-sm">
+              <Flame className="w-4 h-4 text-amber-500" />
+              <span className="text-xs font-black text-amber-700 dark:text-amber-400">3 Day Streak!</span>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            {/* Left: Horizontal Scrollable Timeline Strip */}
+            <div className="lg:col-span-2 flex items-center space-x-2 sm:space-x-4 overflow-x-auto pb-2 scrollbar-hide">
+              {activityHistory.map((log) => (
+                <button
+                  key={log.id}
+                  onClick={() => setSelectedHistory(log)}
+                  className={`flex flex-col items-center justify-center min-w-[4rem] sm:min-w-[5rem] py-3 rounded-2xl border-2 transition-all ${
+                    selectedHistory.id === log.id
+                      ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 shadow-md transform scale-105'
+                      : 'border-transparent bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 shadow-sm'
+                  }`}
+                >
+                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">{log.day}</span>
+                  <span className={`text-lg font-black mt-0.5 ${selectedHistory.id === log.id ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-900 dark:text-white'}`}>
+                    {log.date.split(' ')[1]}
+                  </span>
+                  <div className="mt-2">
+                    {log.status === 'completed' ? (
+                      <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                    ) : log.status === 'missed' ? (
+                      <X className="w-4 h-4 text-rose-500" />
+                    ) : (
+                      <span className="w-2 h-2 rounded-full bg-slate-300 dark:bg-slate-600 block mt-1"></span>
+                    )}
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            {/* Right: Selected Day Details Card */}
+            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 shadow-sm flex flex-col justify-center">
+              <div className="flex items-center justify-between mb-3 border-b border-slate-100 dark:border-slate-700 pb-2">
+                <span className="text-sm font-bold text-slate-900 dark:text-white">{selectedHistory.date} Summary</span>
+                <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded ${
+                  selectedHistory.status === 'completed' ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400' : 
+                  selectedHistory.status === 'missed' ? 'bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-400' : 
+                  'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+                }`}>
+                  {selectedHistory.status}
+                </span>
+              </div>
+              
+              {selectedHistory.status === 'missed' ? (
+                <p className="text-xs text-slate-500 dark:text-slate-400 italic">No exercises logged on this day. Streak was broken.</p>
+              ) : selectedHistory.status === 'today' ? (
+                <p className="text-xs text-slate-500 dark:text-slate-400 italic">Sessions are pending for today. Scroll down to start.</p>
+              ) : (
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <span className="text-[10px] uppercase text-slate-400 font-bold">Sessions</span>
+                    <p className="text-sm font-black text-slate-800 dark:text-slate-200">{selectedHistory.exercises} Completed</p>
+                  </div>
+                  <div>
+                    <span className="text-[10px] uppercase text-slate-400 font-bold">Peak ROM</span>
+                    <p className="text-sm font-black text-blue-600 dark:text-blue-400">{selectedHistory.rom}</p>
+                  </div>
+                  <div className="col-span-2 mt-1 p-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg flex items-center space-x-2">
+                    <Activity className="w-3.5 h-3.5 text-emerald-600" />
+                    <span className="text-xs font-semibold text-emerald-800 dark:text-emerald-300">Avg Pain Score: {selectedHistory.pain}</span>
+                  </div>
+                </div>
+              )}
             </div>
 
           </div>

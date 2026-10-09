@@ -89,6 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       const savedPatients = localStorage.getItem(STORAGE_ACCOUNTS_KEY);
       if (savedPatients) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setPatientAccounts(JSON.parse(savedPatients));
       } else {
         localStorage.setItem(STORAGE_ACCOUNTS_KEY, JSON.stringify(DEFAULT_PATIENT_ACCOUNTS));
@@ -96,6 +97,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       const savedDoctors = localStorage.getItem(STORAGE_DOCTORS_KEY);
       if (savedDoctors) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setDoctorAccounts(JSON.parse(savedDoctors));
       } else {
         localStorage.setItem(STORAGE_DOCTORS_KEY, JSON.stringify(DEFAULT_DOCTORS));
