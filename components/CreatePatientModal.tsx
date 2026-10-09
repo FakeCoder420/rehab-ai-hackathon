@@ -226,9 +226,10 @@ export function CreatePatientModal({ isOpen, onClose, onSuccess }: CreatePatient
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-[13px] font-bold text-slate-700 dark:text-slate-300 mb-1.5">Surgery Type <span className="text-red-500">*</span></label>
-                    <select value={surgeryType} onChange={e=>setSurgeryType(e.target.value)} className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-[14px] focus:border-emerald-500 outline-none text-slate-900 dark:text-white">
-                      <option value="" disabled>Select surgery</option>
-                      {COMMON_SURGERIES.map(s => <option key={s} value={s}>{s}</option>)}
+                    <select value={surgeryType} onChange={e=>setSurgeryType(e.target.value)} className="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition appearance-none">
+                      <option value="" disabled className="bg-white dark:bg-slate-800 text-slate-900 dark:text-white">Select surgery</option>
+                      {COMMON_SURGERIES.map(s => <option key={s} value={s} className="bg-white dark:bg-slate-800 text-slate-900 dark:text-white">{s}</option>)}
+                      <option value="Other / Custom Procedure..." className="bg-white dark:bg-slate-800 text-slate-900 dark:text-white">Other / Custom Procedure...</option>
                     </select>
                   </div>
                   <div>
@@ -241,9 +242,19 @@ export function CreatePatientModal({ isOpen, onClose, onSuccess }: CreatePatient
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-[13px] font-bold text-slate-700 dark:text-slate-300 mb-1.5">Surgery Date <span className="text-red-500">*</span></label>
-                  <input type="date" value={surgeryDate} onChange={e=>setSurgeryDate(e.target.value)} max={new Date().toISOString().split('T')[0]} className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-[14px] focus:border-emerald-500 outline-none" />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[13px] font-bold text-slate-700 dark:text-slate-300 mb-1.5">Surgery Date <span className="text-red-500">*</span></label>
+                    <input type="date" value={surgeryDate} onChange={e=>setSurgeryDate(e.target.value)} max={new Date().toISOString().split('T')[0]} className="w-full h-11 px-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 text-[14px] focus:border-emerald-500 outline-none text-slate-900 dark:text-white" />
+                  </div>
+                  <div>
+                    <label className="block text-[13px] font-bold text-slate-700 dark:text-slate-300 mb-1.5">Language Preference <span className="text-red-500">*</span></label>
+                    <select value={language} onChange={e=>setLanguage(e.target.value as any)} className="w-full text-sm px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition appearance-none">
+                      <option value="English" className="bg-white dark:bg-slate-800 text-slate-900 dark:text-white">English</option>
+                      <option value="Hindi" className="bg-white dark:bg-slate-800 text-slate-900 dark:text-white">Hindi</option>
+                      <option value="Spanish" className="bg-white dark:bg-slate-800 text-slate-900 dark:text-white">Spanish</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 
@@ -341,8 +352,8 @@ export function CreatePatientModal({ isOpen, onClose, onSuccess }: CreatePatient
                             <input type="number" min={1} max={10} value={config.sets} onChange={e=>setPrescriptionConfigs(p=>({...p, [id]:{...p[id], sets: Number(e.target.value)}}))} className="w-14 h-9 px-2 text-center border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 rounded-lg text-[13px] font-bold" />
                           </div>
                           <div className="sm:col-span-4">
-                            <select value={config.timeSlot} onChange={e=>setPrescriptionConfigs(p=>({...p, [id]:{...p[id], timeSlot: e.target.value}}))} className="w-full h-9 px-2 border border-slate-200 dark:border-slate-600 bg-slate-50 dark:bg-slate-900 rounded-lg text-[12px] font-medium outline-none">
-                              {['Morning 09:00 AM', 'Afternoon 01:00 PM', 'Evening 05:00 PM'].map(t=><option key={t} value={t}>{t}</option>)}
+                            <select value={config.timeSlot} onChange={e=>setPrescriptionConfigs(p=>({...p, [id]:{...p[id], timeSlot: e.target.value}}))} className="w-full text-sm px-3.5 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition appearance-none">
+                              {['Morning 09:00 AM', 'Afternoon 01:00 PM', 'Evening 05:00 PM'].map(t=><option key={t} value={t} className="bg-white dark:bg-slate-800 text-slate-900 dark:text-white">{t}</option>)}
                             </select>
                           </div>
                         </div>
