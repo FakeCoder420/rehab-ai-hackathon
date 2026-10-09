@@ -13,7 +13,9 @@ import {
   Target, 
   AlertTriangle,
   Award,
-  ChevronRight
+  ChevronRight,
+  Sparkles,
+  FileCheck
 } from 'lucide-react';
 import { 
   AreaChart, 
@@ -190,6 +192,82 @@ export function TrackReportsView({ patients }: TrackReportsViewProps) {
           </div>
         </div>
 
+      </div>
+
+      {/* AI Clinical Summary */}
+      <div className="mt-6 bg-gradient-to-r from-slate-900 to-slate-800 rounded-3xl p-6 md:p-8 shadow-lg text-white relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-blue-500/10 blur-[50px] rounded-full pointer-events-none" />
+        
+        <div className="flex flex-col md:flex-row md:items-start justify-between gap-6 relative z-10">
+          <div className="flex-1">
+            <div className="flex items-center space-x-2 text-blue-400 mb-3">
+              <Sparkles className="w-5 h-5 animate-pulse" />
+              <span className="text-xs font-black uppercase tracking-widest">AI Weekly Auto-Summary</span>
+            </div>
+            <h3 className="text-xl font-bold mb-3">Recovery Progressing Ahead of Baseline</h3>
+            <p className="text-sm text-slate-300 leading-relaxed font-medium">
+              Patient <strong className="text-white">{activePatient?.name}</strong> demonstrates excellent adherence ({recoveryTrajectoryData[recoveryTrajectoryData.length-1].adherence}%) over the past 14 days. 
+              Knee flexion has improved significantly from 25° to <strong className="text-blue-400">{recoveryTrajectoryData[recoveryTrajectoryData.length-1].romAngle}°</strong>, passing the clinical milestone for Week 3. 
+              Reported pain levels (VAS) have dropped consistently to {recoveryTrajectoryData[recoveryTrajectoryData.length-1].painScore}/10. 
+            </p>
+            <div className="mt-4 p-3 bg-slate-950/50 border border-slate-700 rounded-xl">
+              <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-wider block mb-1">AI Recommendation</span>
+              <span className="text-sm">Patient is ready to transition from passive ROM to active resistance exercises. Consider adding 'Mini Wall Squats' to the routine.</span>
+            </div>
+          </div>
+          
+          {/* Export Action */}
+          <div className="flex-shrink-0">
+            <button className="flex items-center space-x-2 px-5 py-3 bg-white text-slate-900 hover:bg-slate-100 rounded-xl text-sm font-bold shadow-xl transition-all hover:scale-105 active:scale-95">
+              <FileCheck className="w-4 h-4 text-blue-600" />
+              <span>Export EMR Report (PDF)</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Raw Telemetry Data Table */}
+      <div className="mt-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
+        <div className="px-6 py-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+          <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center space-x-2">
+            <Activity className="w-4 h-4 text-slate-500" />
+            <span>Session-by-Session Telemetry Log</span>
+          </h3>
+        </div>
+        
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-sm whitespace-nowrap">
+            <thead className="bg-slate-50 dark:bg-slate-950/50 text-slate-500 dark:text-slate-400 text-xs font-bold uppercase tracking-wider">
+              <tr>
+                <th className="px-6 py-4">Date</th>
+                <th className="px-6 py-4">Exercise Protocol</th>
+                <th className="px-6 py-4">Compliance</th>
+                <th className="px-6 py-4">Peak Angle</th>
+                <th className="px-6 py-4">Pain (VAS)</th>
+                <th className="px-6 py-4">AI Confidence</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300 font-medium">
+              {[
+                { date: 'Oct 9, 2026', ex: 'Seated Knee Extension', comp: '10/10 Reps', angle: '96°', pain: '2', conf: '98%' },
+                { date: 'Oct 8, 2026', ex: 'Ankle Pumps', comp: '15/15 Reps', angle: 'N/A', pain: '1', conf: '99%' },
+                { date: 'Oct 8, 2026', ex: 'Seated Knee Extension', comp: '10/10 Reps', angle: '94°', pain: '2', conf: '97%' },
+                { date: 'Oct 6, 2026', ex: 'Heel Slides', comp: '8/10 Reps', angle: '88°', pain: '4', conf: '95%' },
+              ].map((row, i) => (
+                <tr key={i} className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors">
+                  <td className="px-6 py-4">{row.date}</td>
+                  <td className="px-6 py-4 font-bold text-slate-900 dark:text-white">{row.ex}</td>
+                  <td className="px-6 py-4">
+                    <span className="px-2.5 py-1 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-black">{row.comp}</span>
+                  </td>
+                  <td className="px-6 py-4 text-blue-600 dark:text-blue-400 font-bold">{row.angle}</td>
+                  <td className="px-6 py-4">{row.pain}/10</td>
+                  <td className="px-6 py-4 text-slate-500">{row.conf}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
 
     </div>
