@@ -3,7 +3,7 @@
 import React, { useState, useMemo } from 'react';
 import { useRehab } from '@/context/RehabContext';
 import { useAuth } from '@/context/AuthContext';
-import { X, CheckCircle2, Dumbbell, UserCheck, Play, Search, Plus } from 'lucide-react';
+import { X, CheckCircle2, Dumbbell, UserCheck, Play, Search, Plus, Target, Layers, Clock, Compass, ShieldCheck, Activity } from 'lucide-react';
 
 export interface ExerciseItem {
   id: string;
@@ -371,18 +371,86 @@ export function ExerciseLibrary({ onAssignToPatient }: ExerciseLibraryProps) {
                 />
               </div>
 
-              {/* Important Instructions Section */}
+                            {/* 1. Target Joint Range Telemetry (HUD style) */}
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                <div className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex flex-col items-center text-center shadow-sm">
+                  <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center mb-2">
+                    <Target className="w-4 h-4 text-slate-600 dark:text-slate-300" />
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Target Reps</span>
+                  <span className="text-lg font-extrabold text-slate-900 dark:text-white">{(selectedExercise as any).targetReps || 10}</span>
+                </div>
+                
+                <div className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex flex-col items-center text-center shadow-sm">
+                  <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center mb-2">
+                    <Layers className="w-4 h-4 text-slate-600 dark:text-slate-300" />
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Target Sets</span>
+                  <span className="text-lg font-extrabold text-slate-900 dark:text-white">{(selectedExercise as any).targetSets || 3}</span>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex flex-col items-center text-center shadow-sm">
+                  <div className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-700 flex items-center justify-center mb-2">
+                    <Clock className="w-4 h-4 text-slate-600 dark:text-slate-300" />
+                  </div>
+                  <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Default Slot</span>
+                  <span className="text-[13px] font-bold text-slate-900 dark:text-white mt-1">{(selectedExercise as any).defaultTimeSlot || 'Morning'}</span>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800/50 flex flex-col items-center text-center shadow-sm relative overflow-hidden">
+                  <div className="absolute -right-2 -top-2 w-12 h-12 bg-blue-100 dark:bg-blue-800/30 rounded-full blur-xl"></div>
+                  <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-800/50 flex items-center justify-center mb-2 relative z-10">
+                    <Compass className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <span className="text-[10px] font-bold text-blue-500 dark:text-blue-400 uppercase tracking-wider mb-1 relative z-10">Angle Range</span>
+                  <span className="text-sm font-extrabold text-blue-900 dark:text-blue-300 mt-1 relative z-10">{(selectedExercise as any).targetAngle || '90° - 150°'}</span>
+                </div>
+              </div>
+
+              {/* 2. Post-Surgical Indications & Targeted Muscles */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 mb-3 flex items-center space-x-1.5">
+                    <ShieldCheck className="w-4 h-4 text-indigo-500" />
+                    <span>Clinical Indications</span>
+                  </h4>
+                  <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed font-medium">
+                    Post-Operative Lower & Upper Limb Tele-Rehabilitation. Prescribed for early-stage passive to active-assisted mobility and neuromuscular re-education.
+                  </p>
+                </div>
+                
+                <div className="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 mb-3 flex items-center space-x-1.5">
+                    <Activity className="w-4 h-4 text-rose-500" />
+                    <span>Primary Muscles</span>
+                  </h4>
+                  <div className="flex flex-wrap gap-2">
+                    {((selectedExercise as any).muscles || ['Quadriceps', 'Joint Stabilizers']).map((m: string) => (
+                      <span key={m} className="px-2.5 py-1 rounded bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 text-xs font-bold border border-indigo-100 dark:border-indigo-800/50">
+                        {m}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* 3. Refined Step-by-Step Instructions Section */}
               <div className="p-5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-sm">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 mb-3 flex items-center space-x-1.5">
-                  <span>Important Instructions</span>
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-slate-200 mb-4 flex items-center space-x-1.5">
+                  <span>Step-by-Step Clinical Instructions</span>
                 </h4>
-                <ul className="space-y-2.5 list-disc list-inside text-sm text-slate-700 font-medium">
+                <div className="space-y-4">
                   {selectedExercise.instructions.map((step, idx) => (
-                    <li key={idx} className="leading-relaxed">
-                      {step}
-                    </li>
+                    <div key={idx} className="flex items-start space-x-3">
+                      <div className="w-6 h-6 rounded-full bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-extrabold flex items-center justify-center shrink-0 mt-0.5">
+                        {idx + 1}
+                      </div>
+                      <p className="text-sm text-slate-700 dark:text-slate-300 font-medium leading-relaxed pt-0.5">
+                        {step}
+                      </p>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
 
               {/* Assignment Form Section (Appears when + Assign to Patient is triggered) */}
