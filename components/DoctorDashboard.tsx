@@ -14,6 +14,7 @@ import {
 import { LineChart, Line, XAxis, YAxis, Tooltip as RechartsTooltip, ResponsiveContainer } from 'recharts';
 import { useTheme } from 'next-themes';
 import { ExerciseLibrary } from './doctor/ExerciseLibrary';
+import { TrackReportsView } from './doctor/TrackReportsView';
 
 export function DoctorDashboard() {
   const { user, logout } = useAuth();
@@ -286,11 +287,22 @@ export function DoctorDashboard() {
               </div>
             )}
             
+            {/* Tab 3: Clinical Reports */}
             {activeTab === 'reports' && (
-              <div className="text-center py-24 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[24px]">
-                <TrendingUp className="w-12 h-12 text-slate-300 dark:text-slate-700 mx-auto mb-4" />
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Clinical Reports coming soon</h3>
-                <p className="text-[14px] text-slate-500 dark:text-slate-400 max-w-md mx-auto">Advanced cohort analytics and outcome reporting are being built.</p>
+              <div className="animate-in fade-in duration-300">
+                {patients.length > 0 ? (
+                  <TrackReportsView patients={patients} />
+                ) : (
+                  <div className="flex flex-col items-center justify-center p-12 text-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl">
+                    <div className="w-16 h-16 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
+                      <TrendingUp className="w-8 h-8 text-slate-400" />
+                    </div>
+                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Insufficient Data</h3>
+                    <p className="text-slate-500 dark:text-slate-400 max-w-sm">
+                      Please add patients and wait for them to log exercise sessions before viewing clinical telemetry reports.
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 
