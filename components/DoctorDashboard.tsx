@@ -281,7 +281,7 @@ export function DoctorDashboard() {
             )}
 
             {activeTab === 'library' && (
-              <div className="bg-white dark:bg-slate-900 rounded-[24px] border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
+              <div className="mt-6">
                 <ExerciseLibrary />
               </div>
             )}
