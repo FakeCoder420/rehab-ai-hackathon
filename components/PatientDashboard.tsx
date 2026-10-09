@@ -345,7 +345,7 @@ export function PatientDashboard() {
                     <div className="flex items-center space-x-5 flex-1">
                       
                       {/* Scheduled Time Slot Badge */}
-                      <div className="hidden sm:flex flex-col items-center justify-center w-28 py-3 rounded-2xl bg-slate-100 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 flex-shrink-0">
+                      <div className="hidden sm:flex flex-col items-center justify-center w-28 py-3 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 flex-shrink-0 transition-colors">
                         <Clock className="w-4 h-4 text-emerald-600 mb-1" />
                         <span className="text-xs font-black text-slate-900 dark:text-white text-center leading-tight">
                           {task.timeSlot}
