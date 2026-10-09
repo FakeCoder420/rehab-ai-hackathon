@@ -274,7 +274,7 @@ export function LandingPage() {
           <p className="text-lg text-slate-600 dark:text-slate-400 mb-10 max-w-2xl mx-auto">Join the leading orthopedic clinics using RehabAI to deliver superior post-op outcomes and prevent readmissions.</p>
           <button 
             onClick={handleCTA}
-            className="px-10 py-5 bg-slate-900 dark:bg-white dark:bg-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 text-white dark:text-slate-900 dark:text-white rounded-2xl font-bold shadow-xl transition-transform hover:scale-105"
+            className="px-8 py-4 bg-white dark:bg-emerald-500 text-emerald-800 dark:text-white font-extrabold rounded-full text-lg transition-all shadow-[0_0_40px_rgba(16,185,129,0.2)] hover:scale-105 hover:bg-slate-50 dark:hover:bg-emerald-400"
           >
             Access Clinical Portal
           </button>
