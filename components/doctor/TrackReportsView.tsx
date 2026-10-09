@@ -37,6 +37,7 @@ interface TrackReportsViewProps {
 }
 
 export function TrackReportsView({ patients }: TrackReportsViewProps) {
+  const [isExporting, setIsExporting] = useState(false);
   const [selectedPatientId, setSelectedPatientId] = useState<string>(
     patients[0]?.id || 'pat-sarah-1'
   );
@@ -62,6 +63,16 @@ export function TrackReportsView({ patients }: TrackReportsViewProps) {
     { day: 'Sat', completed: 2, target: 2 },
     { day: 'Sun', completed: 2, target: 2 },
   ];
+
+
+  const handleExportPDF = () => {
+    setIsExporting(true);
+    // Simulate generation time for UX
+    setTimeout(() => {
+      window.print();
+      setIsExporting(false);
+    }, 1200);
+  };
 
   return (
     <div className="space-y-6">
@@ -218,9 +229,17 @@ export function TrackReportsView({ patients }: TrackReportsViewProps) {
           
           {/* Export Action */}
           <div className="flex-shrink-0">
-            <button className="flex items-center space-x-2 px-5 py-3 bg-white text-slate-900 hover:bg-slate-100 rounded-xl text-sm font-bold shadow-xl transition-all hover:scale-105 active:scale-95">
-              <FileCheck className="w-4 h-4 text-blue-600" />
-              <span>Export EMR Report (PDF)</span>
+            <button 
+              onClick={handleExportPDF}
+              disabled={isExporting}
+              className="flex items-center space-x-2 px-5 py-3 bg-white text-slate-900 hover:bg-slate-100 rounded-xl text-sm font-bold shadow-xl transition-all hover:scale-105 active:scale-95 disabled:opacity-75 disabled:hover:scale-100"
+            >
+              {isExporting ? (
+                <Activity className="w-4 h-4 text-blue-600 animate-spin" />
+              ) : (
+                <FileCheck className="w-4 h-4 text-blue-600" />
+              )}
+              <span>{isExporting ? 'Generating Report...' : 'Export EMR Report (PDF)'}</span>
             </button>
           </div>
         </div>
