@@ -23,6 +23,15 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
   const [sosAlert, setSosAlert] = useState<boolean>(false);
   const [isPositioned, setIsPositioned] = useState(false);
   const [audioEnabled, setAudioEnabled] = useState(true);
+
+  const handleCloseSession = () => {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+    }
+    isSpeakingRef.current = false;
+    onClose();
+  };
+
   
   const stageRef = useRef<'down' | 'up' | 'neutral'>('neutral');
   const isSpeakingRef = useRef(false);
@@ -214,6 +223,10 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
 
     return () => { 
       clearTimeout(welcomeTimer);
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      isSpeakingRef.current = false;
       active = false;
       if (camera) {
         camera.stop();
@@ -331,7 +344,7 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
           <button onClick={togglePause} className="p-2 rounded-full bg-slate-800 text-white hover:bg-slate-700 transition">
             {isPaused ? <Play size={20} className="text-emerald-400" /> : <Pause size={20} />}
           </button>
-          <button onClick={onClose} className="p-2 rounded-full bg-slate-800 text-white hover:bg-red-500 hover:text-white transition"><X size={20} /></button>
+          <button onClick={handleCloseSession} className="p-2 rounded-full bg-slate-800 text-white hover:bg-red-500 hover:text-white transition"><X size={20} /></button>
         </div>
       </div>
 
@@ -390,7 +403,7 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
                   <CheckCircle2 className="w-4 h-4" /> <span>High-priority alert logged in Dr. Marcus's Dashboard</span>
                 </div>
               </div>
-              <button onClick={() => { setSosAlert(false); setIsPaused(false); onClose(); }} className="mt-6 w-full py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-sm font-bold transition">
+              <button onClick={() => { setSosAlert(false); setIsPaused(false); handleCloseSession(); }} className="mt-6 w-full py-3 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-sm font-bold transition">
                 End Session & Return to Dashboard
               </button>
             </div>
