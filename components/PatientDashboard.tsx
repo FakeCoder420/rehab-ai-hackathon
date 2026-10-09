@@ -116,7 +116,7 @@ export function PatientDashboard() {
     <div className="min-h-[calc(100vh-4rem)] bg-slate-50 dark:bg-slate-900/70 pb-20">
       
       {/* 1. Patient Profile Summary Bar & Recovery Score */}
-      <section className="bg-gradient-to-r from-emerald-50 to-white border-b border-emerald-100">
+      <section className="bg-gradient-to-r from-emerald-50 to-white dark:from-slate-900 dark:to-slate-950 border-b border-emerald-100 dark:border-slate-800 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -161,22 +161,22 @@ export function PatientDashboard() {
                   </p>
 
                   {/* Cleaned up Info Grid (2-column on desktop) */}
-                  <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-slate-700 bg-white dark:bg-slate-800/60 p-4 rounded-2xl border border-emerald-100/50 backdrop-blur-sm">
+                  <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-slate-700 dark:text-slate-300 bg-white/60 dark:bg-slate-800/60 p-4 rounded-2xl border border-emerald-100/50 dark:border-slate-700 backdrop-blur-sm">
                     <div className="flex items-center space-x-3">
                       <Activity className="w-4 h-4 text-teal-600" />
-                      <span><strong>Procedure:</strong> {currentPatient.surgeryType}</span>
+                      <span><strong className="dark:text-white">Procedure:</strong> {currentPatient.surgeryType}</span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <Calendar className="w-4 h-4 text-teal-600" />
-                      <span><strong>Date:</strong> {currentPatient.surgeryDate}</span>
+                      <span><strong className="dark:text-white">Date:</strong> {currentPatient.surgeryDate}</span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <Phone className="w-4 h-4 text-teal-600" />
-                      <span><strong>Caregiver:</strong> {currentPatient.caregiverContact}</span>
+                      <span><strong className="dark:text-white">Caregiver:</strong> {currentPatient.caregiverContact}</span>
                     </div>
                     <div className="flex items-center space-x-3">
                       <ShieldCheck className="w-4 h-4 text-teal-600" />
-                      <span><strong>Isolation:</strong> Active & Secure</span>
+                      <span><strong className="dark:text-white">Isolation:</strong> Active & Secure</span>
                     </div>
                   </div>
                 </div>
@@ -184,7 +184,7 @@ export function PatientDashboard() {
 
               {/* Adherence Bar */}
               <div className="mt-6">
-                <div className="flex items-center justify-between text-xs font-bold text-slate-700 mb-2">
+                <div className="flex items-center justify-between text-xs font-bold text-slate-700 dark:text-slate-300 mb-2">
                   <span className="flex items-center space-x-1.5">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                     <span>Today's Prescribed Routine Adherence</span>
