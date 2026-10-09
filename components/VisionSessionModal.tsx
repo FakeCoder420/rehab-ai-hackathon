@@ -86,6 +86,13 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
   useEffect(() => {
     if (!isOpen) return;
     
+    // Immediate Welcome Message
+    const welcomeTimer = setTimeout(() => {
+      const msg = `Namaste! Aapka ${exerciseName} session shuru ho raha hai. Target hai ${targetReps} reps. Chaliye shuru karte hain!`;
+      setFeedback(msg);
+      speakFeedback(msg);
+    }, 800);
+
     if (!window.Pose) {
       setFeedback("Error: MediaPipe not loaded.");
       return;
@@ -206,6 +213,7 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
     }
 
     return () => { 
+      clearTimeout(welcomeTimer);
       active = false;
       if (camera) {
         camera.stop();
@@ -271,10 +279,45 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
     setIsListening(!isListening);
   };
 
+
+  // Continuous AI Motivation Loop
+  useEffect(() => {
+    if (!isOpen || isPaused || reps >= targetReps) return;
+
+    const phrases = [
+      "Bahut badhiya, keep going!",
+      "Aapka form achha hai, focus banaye rakhein.",
+      "Saans lete rahein, relax your shoulders.",
+      "Thoda aur push karein, you are doing great!",
+      "Bilkul sahi jaa rahe hain, shabash!",
+      "Rukna nahi hai, bas thode reps aur."
+    ];
+
+    const motivationInterval = setInterval(() => {
+      // Don't interrupt if it's already speaking something important
+      if (typeof window !== 'undefined' && window.speechSynthesis && !window.speechSynthesis.speaking && !isSpeakingRef.current) {
+        const randomPhrase = phrases[Math.floor(Math.random() * phrases.length)];
+        setFeedback(randomPhrase);
+        speakFeedback(randomPhrase);
+      }
+    }, 12000); // Every 12 seconds
+
+    return () => clearInterval(motivationInterval);
+  }, [isOpen, isPaused, reps, targetReps, speakFeedback]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 bg-slate-900 flex flex-col">
+    <div 
+      className="fixed inset-0 z-50 bg-slate-900 flex flex-col"
+      onClick={() => {
+        if (typeof window !== 'undefined' && window.speechSynthesis && !isSpeakingRef.current) {
+          const u = new SpeechSynthesisUtterance('');
+          u.volume = 0;
+          window.speechSynthesis.speak(u);
+        }
+      }}
+    >
       {/* Header */}
       <div className="p-4 bg-slate-950 flex justify-between items-center text-white">
         <div>
