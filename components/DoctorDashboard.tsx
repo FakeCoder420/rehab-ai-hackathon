@@ -5,7 +5,7 @@ import { useAuth } from '@/context/AuthContext';
 import { CreatePatientModal } from './CreatePatientModal';
 import { Patient, ScheduledTask } from '@/types/rehab';
 import { 
-  Users, Activity, UserPlus, Search, Calendar, Clock, Phone, Globe, CheckCircle2, 
+  Users, Activity, UserPlus, Search, Calendar, Clock, Phone, Globe, CheckCircle2, ShieldCheck, 
   AlertCircle, ChevronRight, TrendingUp, Stethoscope, Filter, Sparkles, Award,
   Key, PlusCircle, X, FileCheck, Send, BookOpen, Dumbbell, Sun, Moon,
   LayoutDashboard, Menu, Settings, MessageSquare, LogOut, SearchIcon, ArrowUpRight, ArrowDownRight,
@@ -94,7 +94,30 @@ export function DoctorDashboard() {
           <button onClick={() => setActiveTab('reports')} className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-[14px] font-bold transition-all ${activeTab === 'reports' ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400' : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}>
             <TrendingUp className="w-5 h-5" /> <span>Clinical Reports</span>
           </button>
+
+          {/* AI Insights Widget */}
+          <div className="mt-8 mx-2 p-4 bg-emerald-50 dark:bg-emerald-950/30 rounded-2xl border border-emerald-100 dark:border-emerald-900/50">
+            <div className="flex items-center space-x-2 mb-2">
+              <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+              <h4 className="text-xs font-extrabold text-emerald-900 dark:text-emerald-300 uppercase tracking-wider">AI Daily Insight</h4>
+            </div>
+            <p className="text-xs text-emerald-800 dark:text-emerald-400/90 leading-relaxed font-medium">
+              Cohorts with customized time-slots show a <strong className="font-bold">22% higher adherence rate</strong>. Consider adjusting evening routines for active patients.
+            </p>
+          </div>
         </nav>
+
+        {/* Sidebar Footer / Utilities */}
+        <div className="mt-auto px-4 pb-6 pt-6 border-t border-slate-200 dark:border-slate-800 space-y-2">
+          <button className="flex items-center space-x-3 w-full px-3 py-2 text-sm text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer">
+            <BookOpen className="w-4 h-4" />
+            <span className="font-semibold">Clinical Guidelines</span>
+          </button>
+          <button className="flex items-center space-x-3 w-full px-3 py-2 text-sm text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer">
+            <ShieldCheck className="w-4 h-4" />
+            <span className="font-semibold">HIPAA Compliance</span>
+          </button>
+        </div>
       </aside>
 
       {/* Main Content Area */}
