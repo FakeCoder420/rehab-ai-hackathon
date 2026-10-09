@@ -338,6 +338,7 @@ export function RehabProvider({ children }: { children: ReactNode }) {
     try {
       const storedPatients = localStorage.getItem(STORAGE_PATIENTS_KEY);
       if (storedPatients) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setPatients(JSON.parse(storedPatients));
       } else {
         localStorage.setItem(STORAGE_PATIENTS_KEY, JSON.stringify(SEED_PATIENTS));
@@ -345,6 +346,7 @@ export function RehabProvider({ children }: { children: ReactNode }) {
 
       const storedTasks = localStorage.getItem(STORAGE_TASKS_KEY);
       if (storedTasks) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
         setScheduledTasks(JSON.parse(storedTasks));
       } else {
         localStorage.setItem(STORAGE_TASKS_KEY, JSON.stringify(SEED_TASKS));
