@@ -264,15 +264,7 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
         <div className={`w-full h-full object-cover absolute inset-0 border-[6px] transition-colors duration-500 ${!isPositioned ? 'border-red-500 border-dashed animate-pulse' : 'border-emerald-500 border-solid'}`}>
           <canvas ref={canvasRef} className="w-full h-full object-cover" width="640" height="480" />
           
-          {!isPositioned && (
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-red-900/90 text-red-100 px-6 py-4 rounded-2xl flex items-center space-x-3 shadow-xl backdrop-blur-md">
-              <Camera className="w-8 h-8 animate-bounce" />
-              <div>
-                <p className="font-bold text-lg">Positioning Required</p>
-                <p className="text-sm opacity-90">Kripya poori tarah camera ke frame mein aaiye.</p>
-              </div>
-            </div>
-          )}
+          
           
           {isPaused && !sosAlert && (
             <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm z-40 flex items-center justify-center animate-in fade-in">
