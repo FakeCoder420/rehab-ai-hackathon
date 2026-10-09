@@ -22,9 +22,11 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
   const [isPaused, setIsPaused] = useState(false);
   const [sosAlert, setSosAlert] = useState<boolean>(false);
   const [isPositioned, setIsPositioned] = useState(false);
+  const [audioEnabled, setAudioEnabled] = useState(true);
   
   const stageRef = useRef<'down' | 'up' | 'neutral'>('neutral');
   const isSpeakingRef = useRef(false);
+  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const recognitionRef = useRef<any>(null);
   const isPausedRef = useRef(false);
 
@@ -33,14 +35,46 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
   }, [isPaused]);
 
   const speakFeedback = useCallback((text: string) => {
-    if (!window.speechSynthesis || isSpeakingRef.current) return;
-    isSpeakingRef.current = true;
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+    
+    // Don't speak if the user has muted the session
+    if (!audioEnabled) return; 
+
+    // Cancel any ongoing speech so they don't overlap
+    window.speechSynthesis.cancel();
+
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'hi-IN'; // Upgrade to Hindi native voice
+    utteranceRef.current = utterance; // Prevent React garbage collection bug
+
+    // Try to explicitly find a Hindi voice, fallback to OS default
+    const voices = window.speechSynthesis.getVoices();
+    const hindiVoice = voices.find(v => v.lang === 'hi-IN' || v.lang === 'hi_IN');
+    if (hindiVoice) {
+      utterance.voice = hindiVoice;
+    }
+    
+    utterance.lang = 'hi-IN';
+    utterance.pitch = 1.0;
+    utterance.rate = 0.95; // Slightly slower for better Hindi clarity
+
     utterance.onend = () => { isSpeakingRef.current = false; };
+    utterance.onerror = (e) => { 
+      console.warn("Speech synthesis error:", e);
+      isSpeakingRef.current = false; 
+    };
+
+    isSpeakingRef.current = true;
     window.speechSynthesis.speak(utterance);
     setFeedback(text);
-  }, []);
+  }, [audioEnabled]);
+
+
+  useEffect(() => {
+    if (isOpen && typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      // Force browsers to load voices immediately
+      window.speechSynthesis.getVoices();
+    }
+  }, [isOpen]);
 
   const calculateAngle = (a: any, b: any, c: any) => {
     const radians = Math.atan2(c.y - b.y, c.x - b.x) - Math.atan2(a.y - b.y, a.x - b.x);
