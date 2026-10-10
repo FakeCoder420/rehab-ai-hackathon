@@ -123,7 +123,7 @@ export function LandingPage() {
               </div>
 
               {/* Bottom Section (Main Metric): Full width on mobile, floating on desktop */}
-              <div className="mt-4 md:mt-0 w-full md:w-64 md:absolute md:-bottom-6 md:-left-6 md:sm:bottom-8 md:sm:-left-12 bg-slate-900 md:bg-white md:dark:bg-slate-900/10 md:dark:bg-slate-900/40 md:backdrop-blur-xl border border-slate-700 md:border-white/20 md:dark:border-white/10 p-5 rounded-2xl md:shadow-2xl md:transform md:transition-all md:duration-700 md:translate-y-0 md:opacity-100">
+              <div className="mt-4 md:mt-0 w-full md:w-64 md:absolute md:z-20 md:-bottom-6 md:-left-6 md:sm:bottom-8 md:sm:-left-12 bg-slate-900 md:bg-white md:dark:bg-slate-900/10 md:dark:bg-slate-900/40 md:backdrop-blur-xl border border-slate-700 md:border-white/20 md:dark:border-white/10 p-5 rounded-2xl md:shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:md:shadow-2xl md:transform md:transition-all md:duration-700 md:translate-y-0 md:opacity-100">
                 <div className="flex justify-between items-start mb-3">
                   <div>
                     <p className="text-sm font-extrabold text-white md:text-slate-100 uppercase tracking-wider">Recovery Score</p>
