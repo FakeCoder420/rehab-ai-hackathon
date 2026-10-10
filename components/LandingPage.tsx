@@ -82,9 +82,10 @@ export function LandingPage() {
             </div>
 
             {/* Right Column: Hero Visuals */}
-            <div className="lg:col-span-6 relative w-full aspect-[4/3] rounded-3xl overflow-hidden bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl flex items-center justify-center">
-              {/* Simulated Skeleton/Camera overlay */}
-              <div className="absolute inset-0 bg-slate-900 flex items-center justify-center">
+            <div className="lg:col-span-6 w-full flex flex-col md:relative md:aspect-[4/3] rounded-3xl md:overflow-visible bg-transparent md:bg-slate-100 md:dark:bg-slate-900 md:border md:border-slate-200 md:dark:border-slate-800 md:shadow-2xl">
+              
+              {/* Top Section (Visual): Banner on mobile, full inset on desktop */}
+              <div className="relative w-full h-40 md:h-full md:absolute md:inset-0 rounded-3xl overflow-hidden bg-slate-900 flex items-center justify-center">
                 {/* Simulated Webcam Feed */}
                 <div className="w-full h-full opacity-40 bg-[url('https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?q=80&w=2000&auto=format&fit=crop')] bg-cover bg-center" />
                 
@@ -98,30 +99,42 @@ export function LandingPage() {
                   <path d="M 43 54 A 8 8 0 0 0 49 52" fill="none" stroke="#facc15" strokeWidth="0.5" />
                 </svg>
 
-                {/* Tracking UI Overlay */}
-                <div className="absolute top-6 left-6 bg-slate-950/80 backdrop-blur-md border border-slate-700 p-4 rounded-2xl shadow-xl">
+                {/* Tracking UI Overlay for Desktop (hidden on mobile) */}
+                <div className="hidden md:block absolute top-6 left-6 bg-slate-950/80 backdrop-blur-md border border-slate-700 p-4 rounded-2xl shadow-xl">
                   <div className="flex items-center space-x-2 text-emerald-400 font-bold mb-1"><Activity className="w-4 h-4"/> <span>KNEE ANGLE</span></div>
-                  <div className="text-4xl font-mono text-white tracking-tighter">165°</div>
+                  <div className="text-4xl font-mono text-white tracking-tighter">165&deg;</div>
                 </div>
-                <div className="absolute top-6 right-6 bg-slate-950/80 backdrop-blur-md border border-slate-700 p-4 rounded-2xl shadow-xl text-right">
+                <div className="hidden md:block absolute top-6 right-6 bg-slate-950/80 backdrop-blur-md border border-slate-700 p-4 rounded-2xl shadow-xl text-right">
                   <div className="flex items-center justify-end space-x-2 text-emerald-400 font-bold mb-1"><span>REPS</span></div>
                   <div className="text-4xl font-mono text-white tracking-tighter">8<span className="text-lg text-slate-500">/10</span></div>
                 </div>
               </div>
 
-              {/* Glassmorphism Floating Score Card */}
-              <div className="absolute -bottom-6 -left-6 sm:bottom-8 sm:-left-12 bg-white dark:bg-slate-900/10 dark:bg-slate-900/40 backdrop-blur-xl border border-white/20 dark:border-white/10 p-5 rounded-2xl shadow-2xl w-64 transform transition-all duration-700 translate-y-0 opacity-100">
+              {/* Middle Section (Quick Stats): Visible only on mobile */}
+              <div className="md:hidden mt-4 grid grid-cols-2 gap-4">
+                <div className="bg-slate-900 border border-slate-700 p-4 rounded-2xl shadow-lg">
+                  <div className="flex items-center space-x-2 text-emerald-400 font-bold mb-1"><Activity className="w-4 h-4"/> <span>KNEE ANGLE</span></div>
+                  <div className="text-3xl font-mono text-white tracking-tighter">165&deg;</div>
+                </div>
+                <div className="bg-slate-900 border border-slate-700 p-4 rounded-2xl shadow-lg flex flex-col justify-end text-right">
+                  <div className="flex items-center justify-end space-x-2 text-emerald-400 font-bold mb-1"><span>REPS</span></div>
+                  <div className="text-3xl font-mono text-white tracking-tighter">8<span className="text-lg text-slate-500">/10</span></div>
+                </div>
+              </div>
+
+              {/* Bottom Section (Main Metric): Full width on mobile, floating on desktop */}
+              <div className="mt-4 md:mt-0 w-full md:w-64 md:absolute md:-bottom-6 md:-left-6 md:sm:bottom-8 md:sm:-left-12 bg-slate-900 md:bg-white md:dark:bg-slate-900/10 md:dark:bg-slate-900/40 md:backdrop-blur-xl border border-slate-700 md:border-white/20 md:dark:border-white/10 p-5 rounded-2xl md:shadow-2xl md:transform md:transition-all md:duration-700 md:translate-y-0 md:opacity-100">
                 <div className="flex justify-between items-start mb-3">
                   <div>
-                    <p className="text-xs font-bold text-slate-200 uppercase tracking-wider">Recovery Score</p>
+                    <p className="text-xs font-bold text-slate-300 md:text-slate-200 uppercase tracking-wider">Recovery Score</p>
                     <h3 className="text-3xl font-extrabold text-white mt-1">94</h3>
                   </div>
                   <span className="px-2 py-1 bg-emerald-500/20 text-emerald-300 text-xs font-bold rounded-lg border border-emerald-500/30">+12%</span>
                 </div>
-                <div className="w-full bg-slate-900/50 rounded-full h-2 mb-1 overflow-hidden">
+                <div className="w-full bg-slate-800 md:bg-slate-900/50 rounded-full h-2 mb-1 overflow-hidden">
                   <div className="bg-gradient-to-r from-emerald-400 to-teal-400 h-2 rounded-full w-[94%]" />
                 </div>
-                <p className="text-[10px] text-slate-300">Top 5% of cohort</p>
+                <p className="text-[10px] text-slate-400 md:text-slate-300">Top 5% of cohort</p>
               </div>
             </div>
 
