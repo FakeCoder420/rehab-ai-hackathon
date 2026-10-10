@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { X, Activity, Camera as CameraIcon, Volume2, Mic, MicOff, CheckCircle2, AlertCircle, Pause, Play, Camera } from 'lucide-react';
+import { X, Activity, Camera as CameraIcon, Volume2, VolumeX, Mic, MicOff, CheckCircle2, AlertCircle, Pause, Play, Camera } from 'lucide-react';
 
 declare global {
   interface Window {
@@ -38,6 +38,7 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const recognitionRef = useRef<any>(null);
   const isPausedRef = useRef(false);
+  const lastCorrectionRef = useRef<number>(0);
 
   useEffect(() => {
     isPausedRef.current = isPaused;
@@ -172,6 +173,22 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
             currentAngle = calculateAngle(a, b, c);
             setAngle(currentAngle);
 
+            // Form Correction with Debounce
+            const now = Date.now();
+            if (now - lastCorrectionRef.current >= 3000) {
+              let msg = "";
+              if (currentAngle < 60) {
+                msg = "Knee angle too low";
+              } else if (currentAngle > 165) {
+                msg = "Good form";
+              }
+              if (msg) {
+                setFeedback(msg);
+                speakFeedback(msg);
+                lastCorrectionRef.current = now;
+              }
+            }
+
             if (compareMode === 'standard') {
               if (currentAngle < downTarget) {
                 stageRef.current = 'down';
@@ -181,7 +198,7 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
                 setReps((prev) => {
                   const newReps = prev + 1;
                   if (newReps === targetReps) speakFeedback("Behtareen! Session poora hua.");
-                  else speakFeedback("Bohot badiya rep! Jari rakhein.");
+                  else speakFeedback(newReps.toString());
                   return newReps;
                 });
               }
@@ -194,7 +211,7 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
                 setReps((prev) => {
                   const newReps = prev + 1;
                   if (newReps === targetReps) speakFeedback("Behtareen! Session poora hua.");
-                  else speakFeedback("Bohot badiya rep! Jari rakhein.");
+                  else speakFeedback(newReps.toString());
                   return newReps;
                 });
               }
@@ -338,6 +355,14 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
           <p className="text-xs text-slate-400">Target: {targetReps} Reps</p>
         </div>
         <div className="flex gap-4">
+          <button onClick={() => {
+            setAudioEnabled(!audioEnabled);
+            if (audioEnabled && typeof window !== 'undefined' && 'speechSynthesis' in window) {
+              window.speechSynthesis.cancel();
+            }
+          }} className="p-2 rounded-full bg-slate-800 text-slate-400 hover:text-white transition" title="Mute / Unmute Voice Coach">
+            {audioEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
+          </button>
           <button onClick={toggleMic} className={`p-2 rounded-full ${isListening ? 'bg-red-500/20 text-red-500' : 'bg-slate-800 text-slate-400'}`}>
             {isListening ? <Mic size={20} /> : <MicOff size={20} />}
           </button>
