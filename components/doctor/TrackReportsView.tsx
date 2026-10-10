@@ -38,6 +38,28 @@ interface TrackReportsViewProps {
 
 export function TrackReportsView({ patients }: TrackReportsViewProps) {
   const [isExporting, setIsExporting] = useState(false);
+  const [isGeneratingNote, setIsGeneratingNote] = useState(false);
+  const [generatedNote, setGeneratedNote] = useState<string | null>(null);
+  const [isNoteSaved, setIsNoteSaved] = useState(false);
+
+  const handleGenerateNote = () => {
+    setIsGeneratingNote(true);
+    setIsNoteSaved(false);
+    
+    const patientData = {
+      adherence: "86%",
+      formScore: 78,
+      avgKneeFlexion: "165°",
+      missedSessions: 1
+    };
+
+    setTimeout(() => {
+      const draft = `Subjective: Patient completed ${patientData.adherence} of sessions. No manual pain reports logged.\n\nObjective: Average knee flexion reached ${patientData.avgKneeFlexion}. Form score averaged ${patientData.formScore}/100.\n\nAssessment: Patient is progressing well. Knee range of motion is improving, though slight form correction is still needed on leg raises.\n\nPlan: Continue current protocol. Maintain 3 sets of 15 reps. Review in 7 days.`;
+      
+      setGeneratedNote(draft);
+      setIsGeneratingNote(false);
+    }, 2000);
+  };
   const [selectedPatientId, setSelectedPatientId] = useState<string>(
     patients[0]?.id || 'pat-sarah-1'
   );
@@ -227,12 +249,24 @@ export function TrackReportsView({ patients }: TrackReportsViewProps) {
             </div>
           </div>
           
-          {/* Export Action */}
-          <div className="flex-shrink-0">
+          {/* Actions */}
+          <div className="flex-shrink-0 flex flex-col gap-3">
+            <button 
+              onClick={handleGenerateNote}
+              disabled={isGeneratingNote}
+              className="flex items-center justify-center space-x-2 px-5 py-3 bg-blue-600 text-white hover:bg-blue-500 rounded-xl text-sm font-bold shadow-xl transition-all hover:scale-105 active:scale-95 disabled:opacity-75 disabled:hover:scale-100"
+            >
+              {isGeneratingNote ? (
+                <Activity className="w-4 h-4 animate-spin" />
+              ) : (
+                <Sparkles className="w-4 h-4 text-blue-200" />
+              )}
+              <span>{isGeneratingNote ? 'Drafting Note...' : 'Generate AI Clinical Note'}</span>
+            </button>
             <button 
               onClick={handleExportPDF}
               disabled={isExporting}
-              className="flex items-center space-x-2 px-5 py-3 bg-white text-slate-900 hover:bg-slate-100 rounded-xl text-sm font-bold shadow-xl transition-all hover:scale-105 active:scale-95 disabled:opacity-75 disabled:hover:scale-100"
+              className="flex items-center justify-center space-x-2 px-5 py-3 bg-white text-slate-900 hover:bg-slate-100 rounded-xl text-sm font-bold shadow-xl transition-all hover:scale-105 active:scale-95 disabled:opacity-75 disabled:hover:scale-100"
             >
               {isExporting ? (
                 <Activity className="w-4 h-4 text-blue-600 animate-spin" />
@@ -244,6 +278,38 @@ export function TrackReportsView({ patients }: TrackReportsViewProps) {
           </div>
         </div>
       </div>
+
+      {/* Generated Note UI */}
+      {generatedNote !== null && (
+        <div className="mt-6 bg-white dark:bg-slate-900 rounded-3xl border border-blue-200 dark:border-blue-900/50 overflow-hidden shadow-sm">
+          <div className="px-6 py-4 bg-blue-50 dark:bg-blue-900/20 border-b border-blue-100 dark:border-blue-800/50 flex items-center justify-between">
+            <h3 className="text-sm font-bold text-blue-900 dark:text-blue-400 flex items-center space-x-2">
+              <Sparkles className="w-4 h-4" />
+              <span>AI-Drafted SOAP Note</span>
+            </h3>
+            {isNoteSaved && <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1"><FileCheck className="w-3 h-3" /> Saved to EMR</span>}
+          </div>
+          <div className="p-6">
+            <textarea
+              className="w-full h-56 p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-sm text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-y font-medium leading-relaxed"
+              value={generatedNote}
+              onChange={(e) => {
+                setGeneratedNote(e.target.value);
+                setIsNoteSaved(false);
+              }}
+            />
+            <div className="mt-4 flex justify-end">
+              <button
+                onClick={() => setIsNoteSaved(true)}
+                disabled={isNoteSaved}
+                className="px-6 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-100 rounded-xl text-sm font-bold transition-all disabled:opacity-50"
+              >
+                {isNoteSaved ? 'Saved Successfully' : 'Save to Patient Record'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Raw Telemetry Data Table */}
       <div className="mt-6 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-sm">
