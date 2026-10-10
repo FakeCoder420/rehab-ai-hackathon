@@ -30,7 +30,7 @@ function RehabAppContent() {
             <span>• Block 1 Architectural Delivery</span>
           </div>
 
-          <div className="flex items-center space-x-4 text-[11px] text-slate-400">
+          <div className="flex items-center space-x-4 text-xs text-slate-400">
             <span className="flex items-center space-x-1">
               <ShieldCheck className="w-3.5 h-3.5 text-slate-500" />
               <span>HIPAA Compliant Protocol</span>

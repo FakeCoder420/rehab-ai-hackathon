@@ -73,7 +73,7 @@ export function LandingPage() {
                 </button>
                 <button 
                   onClick={handleCTA}
-                  className="w-full sm:w-auto px-8 py-4 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-900 dark:text-white rounded-2xl font-bold transition-all flex items-center justify-center space-x-2 border border-slate-200 dark:border-slate-700"
+                  className="w-full sm:w-auto px-8 py-4 bg-transparent hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-900 dark:text-white rounded-2xl font-bold transition-all flex items-center justify-center space-x-2 border-2 border-slate-400 dark:border-slate-600 hover:border-slate-500"
                 >
                   <span>Patient Recovery</span>
                 </button>
@@ -126,15 +126,15 @@ export function LandingPage() {
               <div className="mt-4 md:mt-0 w-full md:w-64 md:absolute md:-bottom-6 md:-left-6 md:sm:bottom-8 md:sm:-left-12 bg-slate-900 md:bg-white md:dark:bg-slate-900/10 md:dark:bg-slate-900/40 md:backdrop-blur-xl border border-slate-700 md:border-white/20 md:dark:border-white/10 p-5 rounded-2xl md:shadow-2xl md:transform md:transition-all md:duration-700 md:translate-y-0 md:opacity-100">
                 <div className="flex justify-between items-start mb-3">
                   <div>
-                    <p className="text-xs font-bold text-slate-300 md:text-slate-200 uppercase tracking-wider">Recovery Score</p>
-                    <h3 className="text-3xl font-extrabold text-white mt-1">94</h3>
+                    <p className="text-sm font-extrabold text-white md:text-slate-100 uppercase tracking-wider">Recovery Score</p>
+                    <div className="text-3xl font-extrabold text-white mt-1">94</div>
                   </div>
                   <span className="px-2 py-1 bg-emerald-500/20 text-emerald-300 text-xs font-bold rounded-lg border border-emerald-500/30">+12%</span>
                 </div>
                 <div className="w-full bg-slate-800 md:bg-slate-900/50 rounded-full h-2 mb-1 overflow-hidden">
                   <div className="bg-gradient-to-r from-emerald-400 to-teal-400 h-2 rounded-full w-[94%]" />
                 </div>
-                <p className="text-[10px] text-slate-400 md:text-slate-300">Top 5% of cohort</p>
+                <p className="text-xs text-slate-400 md:text-slate-300">Top 5% of cohort</p>
               </div>
             </div>
 
@@ -145,7 +145,7 @@ export function LandingPage() {
       {/* 2. TRUSTED BY LOGOS */}
       <section className="border-y border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900/50 py-10">
         <div className="max-w-7xl mx-auto px-4 text-center">
-          <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-widest mb-6">Designed for Clinical Excellence</p>
+          <p className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-6">Designed for clinical excellence</p>
           <div className="flex flex-wrap justify-center gap-8 sm:gap-16 opacity-70 grayscale">
             {/* TODO: Replace placeholders with actual credentials/logos */}
             <div className="flex items-center space-x-2 text-slate-800 dark:text-slate-300 font-bold text-xl"><ShieldCheck className="w-6 h-6"/><span>HIPAA Compliant</span></div>
@@ -172,8 +172,8 @@ export function LandingPage() {
               { num: 2, title: "Patient Exercises at Home", desc: "Patient opens the link on their laptop. AI tracks form in real-time and provides live voice feedback." },
               { num: 3, title: "Clinician Reviews Analytics", desc: "Dashboard highlights adherence, pain reports, and joint mobility trends to inform the next visit." }
             ].map((step) => (
-              <div key={step.num} className="bg-slate-50 dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-center relative group hover:-translate-y-2 transition-transform duration-300">
-                <div className="w-16 h-16 mx-auto bg-white dark:bg-slate-950 border-2 border-emerald-500 rounded-2xl flex items-center justify-center text-2xl font-black text-emerald-600 dark:text-emerald-400 mb-6 shadow-lg shadow-emerald-500/20">
+              <div key={step.num} className="bg-slate-50 dark:bg-slate-900 rounded-3xl p-8 border border-slate-200 dark:border-slate-800 text-left relative group hover:-translate-y-2 transition-transform duration-300">
+                <div className="w-16 h-16 bg-white dark:bg-slate-950 border-2 border-emerald-500 rounded-2xl flex items-center justify-center text-2xl font-black text-emerald-600 dark:text-emerald-400 mb-6 shadow-lg shadow-emerald-500/20">
                   {step.num}
                 </div>
                 <h3 className="text-xl font-bold mb-3 text-slate-900 dark:text-white">{step.title}</h3>
@@ -287,9 +287,10 @@ export function LandingPage() {
           <p className="text-lg text-slate-600 dark:text-slate-400 mb-10 max-w-2xl mx-auto">Join the leading orthopedic clinics using RehabAI to deliver superior post-op outcomes and prevent readmissions.</p>
           <button 
             onClick={handleCTA}
-            className="px-8 py-4 bg-white dark:bg-emerald-500 text-emerald-800 dark:text-white font-extrabold rounded-full text-lg transition-all shadow-[0_0_40px_rgba(16,185,129,0.2)] hover:scale-105 hover:bg-slate-50 dark:hover:bg-emerald-400"
+            className="w-full sm:w-auto mx-auto px-8 py-4 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl font-bold shadow-lg shadow-emerald-500/25 transition-all hover:-translate-y-0.5 active:translate-y-0 flex items-center justify-center space-x-2"
           >
-            Access Clinical Portal
+            <span>Clinician Portal</span>
+            <ArrowRight className="w-5 h-5" />
           </button>
           
           <div className="mt-24 pt-8 border-t border-slate-200 dark:border-slate-800 flex flex-col md:flex-row items-center justify-between text-sm text-slate-500">
