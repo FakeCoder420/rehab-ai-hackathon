@@ -176,21 +176,33 @@ export function PatientDashboard() {
 
                   {/* Cleaned up Info Grid (2-column on desktop) */}
                   <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-slate-700 dark:text-slate-300 bg-white/60 dark:bg-slate-800/60 p-4 rounded-2xl border border-emerald-100/50 dark:border-slate-700 backdrop-blur-sm">
-                    <div className="flex items-center space-x-3">
-                      <Activity className="w-4 h-4 text-teal-600" />
-                      <span><strong className="dark:text-white">Procedure:</strong> {currentPatient.surgeryType}</span>
+                    <div className="flex items-start space-x-3">
+                      <div className="mt-0.5"><Activity className="w-4 h-4 text-teal-600" /></div>
+                      <div className="flex flex-col">
+                        <span className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-0.5">Procedure</span>
+                        <span className="font-semibold text-slate-900 dark:text-white">{currentPatient.surgeryType}</span>
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-3">
-                      <Calendar className="w-4 h-4 text-teal-600" />
-                      <span><strong className="dark:text-white">Date:</strong> {currentPatient.surgeryDate}</span>
+                    <div className="flex items-start space-x-3">
+                      <div className="mt-0.5"><Calendar className="w-4 h-4 text-teal-600" /></div>
+                      <div className="flex flex-col">
+                        <span className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-0.5">Date</span>
+                        <span className="font-semibold text-slate-900 dark:text-white">{currentPatient.surgeryDate}</span>
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-3">
-                      <Phone className="w-4 h-4 text-teal-600" />
-                      <span><strong className="dark:text-white">Caregiver:</strong> {currentPatient.caregiverContact}</span>
+                    <div className="flex items-start space-x-3">
+                      <div className="mt-0.5"><Phone className="w-4 h-4 text-teal-600" /></div>
+                      <div className="flex flex-col">
+                        <span className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-0.5">Caregiver</span>
+                        <span className="font-semibold text-slate-900 dark:text-white">{currentPatient.caregiverContact}</span>
+                      </div>
                     </div>
-                    <div className="flex items-center space-x-3">
-                      <ShieldCheck className="w-4 h-4 text-teal-600" />
-                      <span><strong className="dark:text-white">Isolation:</strong> Active & Secure</span>
+                    <div className="flex items-start space-x-3">
+                      <div className="mt-0.5"><ShieldCheck className="w-4 h-4 text-teal-600" /></div>
+                      <div className="flex flex-col">
+                        <span className="text-xs text-slate-500 uppercase tracking-wider font-bold mb-0.5">Isolation</span>
+                        <span className="font-semibold text-slate-900 dark:text-white">Active & Secure</span>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -228,7 +240,7 @@ export function PatientDashboard() {
               
               <div className="flex items-center space-x-2 mb-4">
                 <Trophy className="w-5 h-5 text-amber-500" />
-                <h3 className="text-sm font-extrabold text-slate-800 dark:text-slate-200 uppercase tracking-widest">Recovery Score</h3>
+                <div className="text-sm font-extrabold text-slate-800 dark:text-slate-200 uppercase tracking-widest">Recovery Score</div>
               </div>
               
               <div className="relative flex items-center justify-center mb-2">
@@ -242,13 +254,13 @@ export function PatientDashboard() {
                 </div>
               </div>
               
-              <p className="text-[10px] text-center text-slate-500 dark:text-slate-400 font-bold px-4 mb-5 uppercase tracking-wider">
+              <p className="text-xs text-center text-slate-500 dark:text-slate-400 font-bold px-4 mb-5">
                 Based on adherence & AI analytics
               </p>
 
               {/* Rehab Timeline Progress */}
               <div className="w-full mt-2">
-                <div className="flex justify-between text-[10px] font-bold text-slate-400 mb-2 px-1">
+                <div className="flex justify-between text-xs font-bold text-slate-400 mb-2 px-1">
                   <span>Wk 1</span>
                   <span>Wk 2</span>
                   <span className="text-emerald-700 bg-emerald-50 px-1.5 rounded">Wk 3</span>
@@ -294,13 +306,13 @@ export function PatientDashboard() {
                 <button
                   key={log.id}
                   onClick={() => setSelectedHistory(log)}
-                  className={`flex flex-col items-center justify-center min-w-[4rem] sm:min-w-[5rem] py-3 rounded-2xl border-2 transition-all ${
+                  className={`flex flex-col items-center justify-center min-w-[4rem] sm:min-w-[5rem] h-[100px] rounded-2xl border-2 transition-all ${
                     selectedHistory.id === log.id
                       ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-900/30 shadow-md transform scale-105'
                       : 'border-transparent bg-white dark:bg-slate-800 hover:border-slate-300 dark:hover:border-slate-600 shadow-sm'
                   }`}
                 >
-                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 uppercase">{log.day}</span>
+                  <span className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase">{log.day}</span>
                   <span className={`text-lg font-black mt-0.5 ${selectedHistory.id === log.id ? 'text-emerald-700 dark:text-emerald-400' : 'text-slate-900 dark:text-white'}`}>
                     {log.date.split(' ')[1]}
                   </span>
@@ -321,7 +333,7 @@ export function PatientDashboard() {
             <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 p-4 shadow-sm flex flex-col justify-center">
               <div className="flex items-center justify-between mb-3 border-b border-slate-100 dark:border-slate-700 pb-2">
                 <span className="text-sm font-bold text-slate-900 dark:text-white">{selectedHistory.date} Summary</span>
-                <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded ${
+                <span className={`text-xs font-bold uppercase tracking-widest px-2 py-0.5 rounded ${
                   selectedHistory.status === 'completed' ? 'bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-400' : 
                   selectedHistory.status === 'missed' ? 'bg-rose-100 dark:bg-rose-900/40 text-rose-700 dark:text-rose-400' : 
                   'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
@@ -337,11 +349,11 @@ export function PatientDashboard() {
               ) : (
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <span className="text-[10px] uppercase text-slate-400 font-bold">Sessions</span>
+                    <span className="text-xs uppercase text-slate-400 font-bold">Sessions</span>
                     <p className="text-sm font-black text-slate-800 dark:text-slate-200">{selectedHistory.exercises} Completed</p>
                   </div>
                   <div>
-                    <span className="text-[10px] uppercase text-slate-400 font-bold">Peak ROM</span>
+                    <span className="text-xs uppercase text-slate-400 font-bold">Peak ROM</span>
                     <p className="text-sm font-black text-blue-600 dark:text-blue-400">{selectedHistory.rom}</p>
                   </div>
                   <div className="col-span-2 mt-1 p-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg flex items-center space-x-2">
@@ -359,20 +371,20 @@ export function PatientDashboard() {
       {/* Tab Navigation: Schedule vs Exercise Library */}
       <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700 sticky top-16 z-30 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex space-x-2 sm:space-x-3 py-2.5 overflow-x-auto">
+          <div className="flex space-x-6 sm:space-x-8 pt-4 overflow-x-auto">
             <button
               type="button"
               onClick={() => setActiveTab('schedule')}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+              className={`flex items-center space-x-2 pb-3 border-b-2 text-xs sm:text-sm font-bold transition-all ${
                 activeTab === 'schedule'
-                  ? 'bg-emerald-600 text-white shadow-md'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-white hover:bg-slate-100'
+                  ? 'border-emerald-600 text-emerald-700 dark:text-emerald-400'
+                  : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-white hover:border-slate-300'
               }`}
             >
               <CalendarDays className="w-4 h-4" />
               <span>Prescribed Schedule</span>
-              <span className={`text-[11px] px-2 py-0.5 rounded-full font-black ${
-                activeTab === 'schedule' ? 'bg-emerald-700 text-white' : 'bg-slate-200 text-slate-700'
+              <span className={`text-xs px-2 py-0.5 rounded-full font-black ${
+                activeTab === 'schedule' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'
               }`}>
                 {isolatedTasks.length}
               </span>
@@ -381,10 +393,10 @@ export function PatientDashboard() {
             <button
               type="button"
               onClick={() => setActiveTab('library')}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+              className={`flex items-center space-x-2 pb-3 border-b-2 text-xs sm:text-sm font-bold transition-all ${
                 activeTab === 'library'
-                  ? 'bg-emerald-600 text-white shadow-md'
-                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:text-white hover:bg-slate-100'
+                  ? 'border-emerald-600 text-emerald-700 dark:text-emerald-400'
+                  : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-white hover:border-slate-300'
               }`}
             >
               <Dumbbell className="w-4 h-4" />
@@ -406,7 +418,7 @@ export function PatientDashboard() {
               <span>Next Action Required</span>
             </div>
             <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white mt-1">
-              Your Daily Routine for {todayFormatted}
+              Your Daily Routine for {selectedHistory.day}, {selectedHistory.date}
             </h2>
           </div>
         </div>
@@ -450,7 +462,7 @@ export function PatientDashboard() {
                         <span className="text-xs font-black text-slate-900 dark:text-white text-center leading-tight">
                           {task.timeSlot}
                         </span>
-                        <span className="text-[10px] text-slate-500 dark:text-slate-400 font-bold mt-1 uppercase">Session {index + 1}</span>
+                        <span className="text-xs text-slate-500 dark:text-slate-400 font-bold mt-1 uppercase">Session {index + 1}</span>
                       </div>
 
                       {/* Thumbnail Image */}
@@ -471,7 +483,7 @@ export function PatientDashboard() {
                           
                           {/* Status Badge */}
                           <span
-                            className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-[10px] uppercase tracking-wider font-black ${
+                            className={`inline-flex items-center space-x-1 px-3 py-1 rounded-full text-xs uppercase tracking-wider font-black ${
                               isCompleted
                                 ? 'bg-slate-200 text-slate-600 dark:text-slate-400'
                                 : 'bg-emerald-100 text-emerald-800 border border-emerald-200 animate-pulse'
@@ -540,7 +552,7 @@ export function PatientDashboard() {
                       <button
                         type="button"
                         onClick={() => toggleTaskStatus(task.id)}
-                        className="text-[10px] font-bold text-slate-400 hover:text-slate-600 dark:text-slate-400 underline text-center sm:text-right"
+                        className="text-xs font-bold text-slate-500 hover:text-slate-700 dark:hover:text-slate-300 py-1 px-2 border border-transparent hover:border-slate-300 dark:hover:border-slate-600 rounded-lg text-center sm:text-right"
                       >
                         {isCompleted ? 'Mark as pending' : 'Quick mark as done (skip video)'}
                       </button>

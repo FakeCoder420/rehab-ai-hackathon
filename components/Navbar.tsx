@@ -61,8 +61,8 @@ export function Navbar() {
             <div>
               <div className="flex items-center space-x-2">
                 <span className="text-2xl font-extrabold tracking-tight text-slate-900 dark:text-white">Rehab<span className="text-emerald-600">AI</span></span>
-                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60 hidden sm:inline-block">
-                  Clinical Platform
+                <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200/60 hidden sm:inline-block">
+                  Clinical platform
                 </span>
               </div>
               <p className="text-sm font-medium text-slate-500 dark:text-slate-400 hidden sm:block">Post-Surgical Motion Intelligence</p>
@@ -102,7 +102,7 @@ export function Navbar() {
                       <span className="text-sm font-bold text-slate-900 dark:text-white leading-tight">
                         {user.name}
                       </span>
-                      <span className={`text-[10px] font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded-full ${
+                      <span className={`text-xs font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded-full ${
                         user.role === 'doctor'
                           ? 'bg-slate-100 text-slate-700'
                           : 'bg-emerald-100 text-emerald-800'
