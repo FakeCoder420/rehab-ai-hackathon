@@ -37,7 +37,7 @@ export function LandingPage() {
     <div className="min-h-screen bg-white dark:bg-slate-950 font-sans text-slate-900 dark:text-slate-100 selection:bg-emerald-100 selection:text-emerald-900 dark:selection:bg-emerald-900 dark:selection:text-emerald-100">
       
       {/* 1. HERO SECTION */}
-      <section className="relative w-full pt-16 pb-20 md:pt-24 md:pb-32 overflow-hidden flex items-center justify-center">
+      <section className="relative w-full pt-24 pb-20 md:pt-32 md:pb-32 overflow-hidden flex items-center justify-center">
         {/* Subtle background glow */}
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-400/10 dark:bg-emerald-500/10 blur-[120px] rounded-full pointer-events-none -translate-y-1/2 translate-x-1/3" />
         
@@ -126,15 +126,15 @@ export function LandingPage() {
               <div className="mt-4 md:mt-0 w-full md:w-64 md:absolute md:z-20 md:-bottom-6 md:-left-6 md:sm:bottom-8 md:sm:-left-12 bg-slate-900 md:bg-white md:dark:bg-slate-900/10 md:dark:bg-slate-900/40 md:backdrop-blur-xl border border-slate-700 md:border-white/20 md:dark:border-white/10 p-5 rounded-2xl md:shadow-[0_8px_30px_rgb(0,0,0,0.12)] dark:md:shadow-2xl md:transform md:transition-all md:duration-700 md:translate-y-0 md:opacity-100">
                 <div className="flex justify-between items-start mb-3">
                   <div>
-                    <p className="text-sm font-extrabold text-white md:text-slate-100 uppercase tracking-wider">Recovery Score</p>
-                    <div className="text-3xl font-extrabold text-white mt-1">94</div>
+                    <p className="text-sm font-extrabold text-slate-300 md:text-slate-800 dark:text-slate-300 uppercase tracking-wider">Recovery Score</p>
+                    <div className="text-3xl font-extrabold text-white md:text-slate-900 dark:text-white mt-1">94</div>
                   </div>
                   <span className="px-2 py-1 bg-emerald-500/20 text-emerald-300 text-xs font-bold rounded-lg border border-emerald-500/30">+12%</span>
                 </div>
                 <div className="w-full bg-slate-800 md:bg-slate-900/50 rounded-full h-2 mb-1 overflow-hidden">
                   <div className="bg-gradient-to-r from-emerald-400 to-teal-400 h-2 rounded-full w-[94%]" />
                 </div>
-                <p className="text-xs text-slate-400 md:text-slate-300">Top 5% of cohort</p>
+                <p className="text-xs text-slate-400 md:text-slate-500 dark:text-slate-400">Top 5% of cohort</p>
               </div>
             </div>
 
