@@ -82,9 +82,9 @@ export function Navbar() {
             )}
 
             {isAuthenticated && user ? (
-              <div className="flex items-center space-x-3 sm:space-x-4">
+              <div className="flex items-center p-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700/80 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
                 {/* Profile Badge */}
-                <div className="flex items-center space-x-3 px-4 py-2 bg-white dark:bg-slate-800 dark:bg-slate-900 border border-slate-200 dark:border-slate-700/80 rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+                <div className="flex items-center space-x-3 px-3 py-1">
                   <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold text-sm text-white ${
                     user.role === 'doctor' 
                       ? 'bg-slate-900 shadow-sm shadow-slate-900/20' 
@@ -99,7 +99,7 @@ export function Navbar() {
 
                   <div className="text-left hidden sm:block pr-2">
                     <div className="flex items-center space-x-2">
-                      <span className="text-sm font-bold text-slate-900 dark:text-white leading-tight">
+                      <span className="text-sm font-bold text-slate-900 dark:text-white">
                         {user.name}
                       </span>
                       <span className={`text-xs font-extrabold uppercase tracking-wider px-1.5 py-0.5 rounded-full ${
@@ -118,14 +118,16 @@ export function Navbar() {
                   </div>
                 </div>
 
+                <div className="w-px h-8 bg-slate-200 dark:bg-slate-700 hidden sm:block mx-1"></div>
+
                 {/* Logout Button */}
                 <button
                   type="button"
                   onClick={logout}
-                  className="inline-flex items-center space-x-2 p-2 sm:px-4 sm:py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:text-red-600 hover:bg-red-50 hover:border-red-200 text-sm font-bold transition-all shadow-sm"
+                  className="inline-flex items-center justify-center p-2 sm:px-3 sm:py-2.5 rounded-xl text-slate-500 dark:text-slate-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 text-sm font-bold transition-all ml-1"
                   title="Logout and terminate secure session"
                 >
-                  <LogOut className="w-4 h-4" />
+                  <LogOut className="w-4 h-4 sm:mr-2" />
                   <span className="hidden sm:inline">Logout</span>
                 </button>
               </div>

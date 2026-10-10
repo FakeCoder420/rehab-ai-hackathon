@@ -95,20 +95,10 @@ export function DoctorDashboard() {
             <TrendingUp className="w-5 h-5" /> <span>Clinical Reports</span>
           </button>
 
-          {/* AI Insights Widget */}
-          <div className="mt-8 mx-2 p-4 bg-emerald-50 dark:bg-emerald-950/30 rounded-2xl border border-emerald-100 dark:border-emerald-900/50">
-            <div className="flex items-center space-x-2 mb-2">
-              <Sparkles className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-              <h4 className="text-xs font-extrabold text-emerald-900 dark:text-emerald-300 uppercase tracking-wider">AI Daily Insight</h4>
-            </div>
-            <p className="text-xs text-emerald-800 dark:text-emerald-400/90 leading-relaxed font-medium">
-              Cohorts with customized time-slots show a <strong className="font-bold">22% higher adherence rate</strong>. Consider adjusting evening routines for active patients.
-            </p>
-          </div>
-        </nav>
+          </nav>
 
         {/* Sidebar Footer / Utilities */}
-        <div className="mt-auto px-4 pb-6 pt-6 border-t border-slate-200 dark:border-slate-800 space-y-2">
+        <div className="mt-auto px-4 pt-6 border-t border-slate-200 dark:border-slate-800 space-y-2">
           <button className="flex items-center space-x-3 w-full px-3 py-2 text-sm text-slate-500 hover:text-slate-900 dark:hover:text-white transition-colors cursor-pointer">
             <BookOpen className="w-4 h-4" />
             <span className="font-semibold">Clinical Guidelines</span>
@@ -117,6 +107,17 @@ export function DoctorDashboard() {
             <ShieldCheck className="w-4 h-4" />
             <span className="font-semibold">HIPAA Compliance</span>
           </button>
+        </div>
+
+        {/* AI Insights Widget - Moved down and restyled */}
+        <div className="mt-6 mb-6 mx-4 p-4 bg-indigo-50 dark:bg-indigo-950/30 rounded-2xl border border-indigo-100 dark:border-indigo-900/50">
+          <div className="flex items-center space-x-2 mb-2">
+            <Sparkles className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+            <h4 className="text-xs font-extrabold text-indigo-900 dark:text-indigo-300 tracking-wider">AI daily insight</h4>
+          </div>
+          <p className="text-xs text-indigo-800 dark:text-indigo-400/90 leading-relaxed font-medium">
+            Cohorts with customized time-slots show a <strong className="font-bold">22% higher adherence rate</strong>. Consider adjusting evening routines for active patients.
+          </p>
         </div>
       </aside>
 
@@ -131,53 +132,56 @@ export function DoctorDashboard() {
             
             {activeTab === 'roster' && (
               <>
+                <div className="mb-6 flex items-center justify-between">
+                  <h1 className="text-2xl font-extrabold text-slate-900 dark:text-white">Patient Roster</h1>
+                </div>
                 {/* KPI Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
                   <div className="bg-white dark:bg-slate-900 p-5 rounded-[20px] border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
                     <div className="flex justify-between items-start mb-2">
-                      <p className="text-[13px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Active Patients</p>
+                      <p className="text-sm font-bold text-slate-500 dark:text-slate-400">Active Patients</p>
                       <div className="p-2 bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 rounded-lg"><Users className="w-4 h-4"/></div>
                     </div>
                     <div className="flex items-end space-x-2">
                       <h3 className="text-3xl font-extrabold">{activePatients}</h3>
-                      <span className="text-[13px] font-semibold text-emerald-600 dark:text-emerald-400 flex items-center mb-1"><ArrowUpRight className="w-3 h-3 mr-0.5"/> 2 this week</span>
+                      <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 flex items-center mb-1"><ArrowUpRight className="w-3 h-3 mr-0.5"/> 2 this week</span>
                     </div>
                   </div>
 
                   <div className="bg-white dark:bg-slate-900 p-5 rounded-[20px] border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
                     <div className="flex justify-between items-start mb-2">
-                      <p className="text-[13px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Cohort Adherence</p>
+                      <p className="text-sm font-bold text-slate-500 dark:text-slate-400">Cohort Adherence</p>
                       <div className="p-2 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-lg"><TrendingUp className="w-4 h-4"/></div>
                     </div>
                     <div className="flex items-end space-x-2">
                       <h3 className="text-3xl font-extrabold">{adherenceRate}%</h3>
                       {adherenceRate >= 80 ? (
-                        <span className="text-[13px] font-semibold text-emerald-600 dark:text-emerald-400 flex items-center mb-1"><ArrowUpRight className="w-3 h-3 mr-0.5"/> Excellent</span>
+                        <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 flex items-center mb-1"><ArrowUpRight className="w-3 h-3 mr-0.5"/> Excellent</span>
                       ) : (
-                        <span className="text-[13px] font-semibold text-amber-600 dark:text-amber-500 flex items-center mb-1"><ArrowDownRight className="w-3 h-3 mr-0.5"/> Warning</span>
+                        <span className="text-sm font-semibold text-amber-600 dark:text-amber-500 flex items-center mb-1"><ArrowDownRight className="w-3 h-3 mr-0.5"/> Warning</span>
                       )}
                     </div>
                   </div>
 
                   <div className="bg-white dark:bg-slate-900 p-5 rounded-[20px] border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
                     <div className="flex justify-between items-start mb-2">
-                      <p className="text-[13px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Needs Attention</p>
+                      <p className="text-sm font-bold text-slate-500 dark:text-slate-400">Needs Attention</p>
                       <div className="p-2 bg-red-50 dark:bg-red-500/10 text-red-600 dark:text-red-400 rounded-lg"><AlertCircle className="w-4 h-4"/></div>
                     </div>
                     <div className="flex items-end space-x-2">
-                      <h3 className="text-3xl font-extrabold text-red-600 dark:text-red-400">{needsAttention.length}</h3>
-                      <span className="text-[13px] font-semibold text-slate-500 dark:text-slate-400 mb-1">patients at risk</span>
+                      <h3 className={`text-3xl font-extrabold ${needsAttention.length > 0 ? 'text-red-600 dark:text-red-400' : 'text-slate-500 dark:text-slate-400'}`}>{needsAttention.length}</h3>
+                      <span className="text-sm font-semibold text-slate-500 dark:text-slate-400 mb-1">patients at risk</span>
                     </div>
                   </div>
 
                   <div className="bg-white dark:bg-slate-900 p-5 rounded-[20px] border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
                     <div className="flex justify-between items-start mb-2">
-                      <p className="text-[13px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Sessions Today</p>
+                      <p className="text-sm font-bold text-slate-500 dark:text-slate-400">Sessions Today</p>
                       <div className="p-2 bg-teal-50 dark:bg-teal-500/10 text-teal-600 dark:text-teal-400 rounded-lg"><CheckCircle2 className="w-4 h-4"/></div>
                     </div>
                     <div className="flex items-end space-x-2">
                       <h3 className="text-3xl font-extrabold">{completedTasks}</h3>
-                      <span className="text-[13px] font-semibold text-emerald-600 dark:text-emerald-400 flex items-center mb-1"><ArrowUpRight className="w-3 h-3 mr-0.5"/> 14%</span>
+                      <span className="text-sm font-semibold text-emerald-600 dark:text-emerald-400 flex items-center mb-1"><ArrowUpRight className="w-3 h-3 mr-0.5"/> 14%</span>
                     </div>
                   </div>
                 </div>
@@ -185,7 +189,7 @@ export function DoctorDashboard() {
                 {/* Needs Attention Panel */}
                 {needsAttention.length > 0 && (
                   <div className="bg-red-50 dark:bg-red-950/20 border border-red-100 dark:border-red-900/50 rounded-[24px] p-6">
-                    <h3 className="text-[16px] font-bold text-red-800 dark:text-red-400 flex items-center mb-4"><AlertCircle className="w-5 h-5 mr-2"/> Clinical Attention Required</h3>
+                    <h3 className="text-base font-bold text-red-800 dark:text-red-400 flex items-center mb-4"><AlertCircle className="w-5 h-5 mr-2"/> Clinical Attention Required</h3>
                     <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
                       {needsAttention.map(p => (
                         <div key={p.id} className="bg-white dark:bg-slate-900 border border-red-200 dark:border-red-900/40 rounded-xl p-4 shadow-sm flex justify-between items-center cursor-pointer hover:border-red-300 dark:hover:border-red-800 transition-colors" onClick={() => setInspectedPatientId(p.id)}>
@@ -222,7 +226,7 @@ export function DoctorDashboard() {
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div className="flex flex-wrap items-center gap-2">
                     {['all', 'knee', 'shoulder', 'acl'].map((f) => (
-                      <button key={f} onClick={() => setSelectedFilter(f as any)} className={`px-4 py-2 rounded-full text-[13px] font-bold transition-all shadow-sm ${selectedFilter === f ? 'bg-emerald-600 text-white shadow-emerald-500/25' : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors'}`}>
+                      <button key={f} onClick={() => setSelectedFilter(f as any)} className={`px-4 py-2 rounded-full text-sm font-bold transition-all shadow-sm ${selectedFilter === f ? 'bg-emerald-600 text-white shadow-emerald-500/25' : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors'}`}>
                         {f === 'all' ? 'All Patients' : f.charAt(0).toUpperCase() + f.slice(1)}
                       </button>
                     ))}
@@ -266,22 +270,22 @@ export function DoctorDashboard() {
                                 {p.name.split(' ').map(n=>n[0]).join('')}
                               </div>
                               <div>
-                                <h3 className="text-[15px] font-bold text-slate-900 dark:text-white leading-tight">{p.name}</h3>
-                                <p className="text-[12px] text-slate-500 dark:text-slate-400 font-medium mt-0.5">{p.surgeryType}</p>
+                                <h3 className="text-[15px] font-bold text-slate-900 dark:text-white leading-normal">{p.name}</h3>
+                                <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-0.5">{p.surgeryType}</p>
                               </div>
                             </div>
-                            <button className="text-slate-400 group-hover:text-emerald-500 transition-colors"><MoreVertical className="w-5 h-5"/></button>
+                            <button className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition-colors"><MoreVertical className="w-5 h-5"/></button>
                           </div>
                           
                           <div className="flex items-center space-x-2 mb-4">
-                            <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">Week 3 Post-Op</span>
-                            <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${statusColors}`}>{statusText}</span>
+                            <span className="text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300">Week 3 Post-Op</span>
+                            <span className={`text-xs font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border ${statusColors}`}>{statusText}</span>
                           </div>
 
                           <div className="mt-auto space-y-4">
                             <div className="flex justify-between items-end">
                               <div>
-                                <p className="text-[12px] font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Adherence</p>
+                                <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase mb-1">Adherence</p>
                                 <p className="text-xl font-extrabold text-slate-900 dark:text-white">{Math.round(rate * 100)}%</p>
                               </div>
                               <div className="w-12 h-12 relative flex items-center justify-center">
@@ -292,7 +296,7 @@ export function DoctorDashboard() {
                               </div>
                             </div>
 
-                            <div className="pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-[12px] text-slate-500 dark:text-slate-400 font-medium">
+                            <div className="pt-4 border-t border-slate-100 dark:border-slate-800/80 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 font-medium">
                               <span className="flex items-center"><Calendar className="w-3.5 h-3.5 mr-1.5"/> Last session: 2h ago</span>
                             </div>
                           </div>
@@ -355,8 +359,8 @@ export function DoctorDashboard() {
                         {p.name.split(' ').map(n=>n[0]).join('')}
                       </div>
                       <div>
-                        <h2 className="text-xl font-bold text-slate-900 dark:text-white leading-tight">{p.name}</h2>
-                        <p className="text-[13px] text-slate-500 dark:text-slate-400 font-medium">{p.surgeryType}</p>
+                        <h2 className="text-xl font-bold text-slate-900 dark:text-white leading-normal">{p.name}</h2>
+                        <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">{p.surgeryType}</p>
                       </div>
                     </div>
                     <button onClick={() => setInspectedPatientId(null)} className="p-2 bg-white dark:bg-slate-800 rounded-full text-slate-400 hover:text-slate-700 dark:hover:text-white shadow-sm border border-slate-200 dark:border-slate-700"><X className="w-5 h-5"/></button>
@@ -366,11 +370,11 @@ export function DoctorDashboard() {
                     {/* Metrics */}
                     <div className="grid grid-cols-2 gap-4">
                       <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-800">
-                        <p className="text-[12px] font-bold text-slate-500 uppercase tracking-wider mb-1">Adherence</p>
+                        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Adherence</p>
                         <p className={`text-2xl font-extrabold ${rate >= 0.8 ? 'text-emerald-600' : rate >= 0.5 ? 'text-amber-500' : 'text-red-500'}`}>{Math.round(rate * 100)}%</p>
                       </div>
                       <div className="p-4 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-800">
-                        <p className="text-[12px] font-bold text-slate-500 uppercase tracking-wider mb-1">Pain Score</p>
+                        <p className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">Pain Score</p>
                         <p className="text-2xl font-extrabold text-slate-900 dark:text-white">{(p as any).lastPainScore || 0} <span className="text-sm font-medium text-slate-500">/10</span></p>
                       </div>
                     </div>
@@ -378,7 +382,7 @@ export function DoctorDashboard() {
                     <div>
                       <h4 className="text-[14px] font-bold text-slate-900 dark:text-white mb-4 uppercase tracking-wider flex items-center"><Activity className="w-4 h-4 mr-2"/> Range of Motion</h4>
                       <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
-                        <div className="flex justify-between text-[13px] font-medium text-slate-600 dark:text-slate-400 mb-2"><span>Knee Flexion</span> <span>95° / Target 120°</span></div>
+                        <div className="flex justify-between text-sm font-medium text-slate-600 dark:text-slate-400 mb-2"><span>Knee Flexion</span> <span>95° / Target 120°</span></div>
                         <div className="w-full bg-slate-200 dark:bg-slate-700 rounded-full h-2">
                           <div className="bg-emerald-500 h-2 rounded-full w-[79%]" />
                         </div>
@@ -418,7 +422,7 @@ export function DoctorDashboard() {
                               <div className="flex items-center space-x-3">
                                 <div className="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 flex items-center justify-center shrink-0"><Dumbbell className="w-5 h-5"/></div>
                                 <div>
-                                  <p className="text-[13px] font-bold text-slate-900 dark:text-white leading-tight">{ex?.name}</p>
+                                  <p className="text-sm font-bold text-slate-900 dark:text-white leading-normal">{ex?.name}</p>
                                   <p className="text-[11px] text-slate-500">{t.targetReps} reps · {t.targetSets} sets</p>
                                 </div>
                               </div>
@@ -431,8 +435,8 @@ export function DoctorDashboard() {
                   </div>
                   
                   <div className="p-6 border-t border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shrink-0 grid grid-cols-2 gap-4">
-                    <button onClick={() => { setInspectedPatientId(null); handleOpenPatientView(p.id); }} className="px-4 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-bold text-[13px] hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center justify-center"><Eye className="w-4 h-4 mr-2"/> View Portal</button>
-                    <button className="px-4 py-3 bg-slate-900 dark:bg-slate-900 text-white dark:text-white rounded-xl font-bold text-[13px] hover:scale-105 transition shadow-md flex items-center justify-center"><MessageSquare className="w-4 h-4 mr-2"/> Message</button>
+                    <button onClick={() => { setInspectedPatientId(null); handleOpenPatientView(p.id); }} className="px-4 py-3 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl font-bold text-sm hover:bg-slate-200 dark:hover:bg-slate-700 transition flex items-center justify-center"><Eye className="w-4 h-4 mr-2"/> View Portal</button>
+                    <button className="px-4 py-3 bg-slate-900 dark:bg-slate-900 text-white dark:text-white rounded-xl font-bold text-sm hover:scale-105 transition shadow-md flex items-center justify-center"><MessageSquare className="w-4 h-4 mr-2"/> Message</button>
                   </div>
                 </>
               )
