@@ -1,4 +1,5 @@
 'use client';
+import { usePWA } from '@/hooks/usePWA';
 
 import React from 'react';
 import Link from 'next/link';
@@ -19,6 +20,7 @@ import {
 
 
 export function Navbar() {
+  const { isOnline } = usePWA();
   const router = useRouter();
   const { 
     setActiveRole,
@@ -47,6 +49,12 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-slate-200/80 dark:border-slate-800 bg-white/80 dark:bg-slate-950/80 backdrop-blur-xl transition-colors">
+      {/* Network status banner */}
+      {!isOnline && (
+        <div className="w-full bg-amber-500 text-amber-950 text-xs font-bold text-center py-1 tracking-wide">
+          🟠 Offline Mode — Progress saving locally
+        </div>
+      )}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           
@@ -147,6 +155,7 @@ export function Navbar() {
 
         </div>
       </div>
-    </header>
+      {/* Online/Offline Network Indicator — injected outside header for safety */}
+</header>
   );
 }

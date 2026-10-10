@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
-import { X, Activity, Camera as CameraIcon, Volume2, VolumeX, Mic, MicOff, CheckCircle2, AlertCircle, Pause, Play, Camera } from 'lucide-react';
+import { X, Activity, Camera as CameraIcon, Volume2, VolumeX, Mic, MicOff, CheckCircle2, AlertCircle, Pause, Play, Camera, FlipHorizontal } from 'lucide-react';
 
 declare global {
   interface Window {
@@ -23,6 +23,10 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
   const [sosAlert, setSosAlert] = useState<boolean>(false);
   const [isPositioned, setIsPositioned] = useState(false);
   const [audioEnabled, setAudioEnabled] = useState(true);
+  const [facingMode, setFacingMode] = useState<'user' | 'environment'>('user');
+  const [inTargetZone, setInTargetZone] = useState(false);
+  const [targetHoldStart, setTargetHoldStart] = useState<number | null>(null);
+  const [cameraError, setCameraError] = useState<string | null>(null);
 
   const handleCloseSession = () => {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -33,12 +37,40 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
   };
 
   
+  const switchCamera = async () => {
+    const newMode = facingModeRef.current === 'user' ? 'environment' : 'user';
+    // Stop current tracks
+    if (videoRef.current && videoRef.current.srcObject) {
+      const stream = videoRef.current.srcObject as MediaStream;
+      stream.getTracks().forEach(t => t.stop());
+      videoRef.current.srcObject = null;
+    }
+    try {
+      const newStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: newMode, width: 640, height: 480 }
+      });
+      if (videoRef.current) {
+        videoRef.current.srcObject = newStream;
+        await videoRef.current.play().catch(() => {});
+      }
+      facingModeRef.current = newMode;
+      setFacingMode(newMode);
+      setCameraError(null);
+    } catch {
+      setCameraError('Rear camera not found on this device.');
+      setTimeout(() => setCameraError(null), 3000);
+    }
+  };
+
   const stageRef = useRef<'down' | 'up' | 'neutral'>('neutral');
   const isSpeakingRef = useRef(false);
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
   const recognitionRef = useRef<any>(null);
   const isPausedRef = useRef(false);
   const lastCorrectionRef = useRef<number>(0);
+  const inTargetZoneRef = useRef(false);
+  const targetHoldStartRef = useRef<number | null>(null);
+  const facingModeRef = useRef<'user' | 'environment'>('user');
 
   useEffect(() => {
     isPausedRef.current = isPaused;
@@ -128,6 +160,92 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
       if (results.poseLandmarks) {
         window.drawConnectors(canvasCtx, results.poseLandmarks, window.POSE_CONNECTIONS, { color: '#00FF00', lineWidth: 4 });
         window.drawLandmarks(canvasCtx, results.poseLandmarks, { color: '#FF0000', lineWidth: 2 });
+
+        // ─── AR TARGET ZONE ───────────────────────────────────────────
+        if (!isPausedRef.current) {
+          const cw = canvasRef.current!.width;
+          const ch = canvasRef.current!.height;
+          // Target: upper-centre for knee raise / ankle pumps  (25% from top, 50% wide)
+          const tx = cw * 0.50;
+          const ty = ch * 0.25;
+          const radius = Math.min(cw, ch) * 0.08;
+
+          // Pick relevant landmark per exercise
+          const landmarkIndex = exerciseName === 'Ankle Pumps' ? 32 : 28; // footIndex or ankle
+          const lm = results.poseLandmarks[landmarkIndex];
+          let hit = false;
+
+          if (lm) {
+            const lx = lm.x * cw;
+            const ly = lm.y * ch;
+            const dist = Math.sqrt((lx - tx) ** 2 + (ly - ty) ** 2);
+            hit = dist < radius;
+
+            if (hit !== inTargetZoneRef.current) {
+              inTargetZoneRef.current = hit;
+              setInTargetZone(hit);
+              if (hit) {
+                targetHoldStartRef.current = Date.now();
+                setTargetHoldStart(Date.now());
+              } else {
+                targetHoldStartRef.current = null;
+                setTargetHoldStart(null);
+              }
+            }
+
+            // Hold for 1 second → count a rep
+            if (hit && targetHoldStartRef.current !== null) {
+              const held = Date.now() - targetHoldStartRef.current;
+              if (held >= 1000 && stageRef.current !== 'up') {
+                stageRef.current = 'up';
+                setReps((prev) => {
+                  const newReps = prev + 1;
+                  if (newReps === targetReps) speakFeedback('Behtareen! Session poora hua.');
+                  else speakFeedback(newReps.toString());
+                  return newReps;
+                });
+                targetHoldStartRef.current = null;
+                setTargetHoldStart(null);
+              }
+            } else if (!hit) {
+              stageRef.current = 'down';
+            }
+          }
+
+          // Draw outer glow
+          canvasCtx.save();
+          const glowColor = hit ? '#00ff88' : '#3b82f6';
+          const shadowColor = hit ? '#00ff88' : '#ef4444';
+          canvasCtx.shadowBlur = hit ? 30 : 15;
+          canvasCtx.shadowColor = shadowColor;
+
+          // Filled semi-transparent circle
+          canvasCtx.beginPath();
+          canvasCtx.arc(tx, ty, radius, 0, 2 * Math.PI);
+          canvasCtx.fillStyle = hit ? 'rgba(0,255,136,0.25)' : 'rgba(59,130,246,0.20)';
+          canvasCtx.fill();
+
+          // Stroke ring
+          canvasCtx.lineWidth = 3;
+          canvasCtx.strokeStyle = glowColor;
+          canvasCtx.stroke();
+
+          // Centre crosshair
+          canvasCtx.lineWidth = 2;
+          canvasCtx.beginPath();
+          canvasCtx.moveTo(tx - 10, ty); canvasCtx.lineTo(tx + 10, ty);
+          canvasCtx.moveTo(tx, ty - 10); canvasCtx.lineTo(tx, ty + 10);
+          canvasCtx.stroke();
+
+          // Label
+          canvasCtx.shadowBlur = 0;
+          canvasCtx.font = 'bold 11px sans-serif';
+          canvasCtx.fillStyle = hit ? '#00ff88' : '#93c5fd';
+          canvasCtx.textAlign = 'center';
+          canvasCtx.fillText(hit ? '✓ HOLD' : 'TARGET', tx, ty + radius + 16);
+          canvasCtx.restore();
+        }
+        // ─────────────────────────────────────────────────────────────
 
         const shoulder = results.poseLandmarks[12];
         const hip = results.poseLandmarks[24];
@@ -369,6 +487,13 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
           <button onClick={togglePause} className="p-2 rounded-full bg-slate-800 text-white hover:bg-slate-700 transition">
             {isPaused ? <Play size={20} className="text-emerald-400" /> : <Pause size={20} />}
           </button>
+          <button
+            onClick={switchCamera}
+            className="p-2 rounded-full bg-slate-800 text-slate-400 hover:text-white transition"
+            title="Flip Camera"
+          >
+            <FlipHorizontal size={20} />
+          </button>
           <button onClick={handleCloseSession} className="p-2 rounded-full bg-slate-800 text-white hover:bg-red-500 hover:text-white transition"><X size={20} /></button>
         </div>
       </div>
@@ -376,8 +501,13 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
       {/* Camera View */}
       <div className="flex-1 relative overflow-hidden bg-black flex justify-center items-center">
         <video ref={videoRef} className="hidden" />
+        {cameraError && (
+          <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50 bg-red-900/90 text-white text-xs font-bold px-4 py-2 rounded-full shadow-lg">
+            {cameraError}
+          </div>
+        )}
         <div className={`w-full h-full object-cover absolute inset-0 border-[6px] transition-colors duration-500 ${!isPositioned ? 'border-red-500 border-dashed animate-pulse' : 'border-emerald-500 border-solid'}`}>
-          <canvas ref={canvasRef} className="w-full h-full object-cover" width="640" height="480" />
+          <canvas ref={canvasRef} className={`w-full h-full object-cover transition-transform duration-300 ${facingMode === 'user' ? 'scale-x-[-1]' : ''}`} width="640" height="480" />
           
           
           
@@ -410,6 +540,11 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
         <div className="absolute bottom-10 left-1/2 -translate-x-1/2 bg-blue-900/80 px-6 py-3 rounded-full text-blue-200 font-semibold shadow-lg text-center whitespace-nowrap">
           {feedback}
         </div>
+        {inTargetZone && (
+          <div className="absolute bottom-24 left-1/2 -translate-x-1/2 bg-emerald-500/90 text-white text-xs font-black px-4 py-1.5 rounded-full shadow-lg animate-pulse uppercase tracking-widest">
+            🎯 Target Zone — Hold!
+          </div>
+        )}
         
         {/* SOS Alert UI */}
         {sosAlert && (
