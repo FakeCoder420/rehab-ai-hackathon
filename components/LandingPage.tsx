@@ -220,18 +220,18 @@ export function LandingPage() {
             </div>
 
             {/* Bento Card 4: Cohort Oversight */}
-            <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-[24px] p-8 border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 transition-colors flex flex-col justify-between overflow-hidden relative">
-              <div className="relative z-10">
+            <div className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-[24px] pt-8 px-8 pb-0 md:pb-8 border border-slate-200 dark:border-slate-800 hover:border-emerald-500/50 transition-colors flex flex-col justify-between overflow-hidden relative">
+              <div className="relative z-10 mb-8 md:mb-0">
                 <Users className="w-10 h-10 text-indigo-500 mb-4" />
                 <h3 className="text-2xl font-bold mb-2 text-slate-900 dark:text-white">Population Oversight</h3>
                 <p className="text-slate-600 dark:text-slate-400 max-w-md">Instantly identify which patients are falling behind their protocol or experiencing pain, allowing for proactive clinical interventions.</p>
               </div>
               
               {/* Mini UI Mock */}
-              <div className="absolute right-0 bottom-0 translate-x-1/4 translate-y-1/4 w-[400px] h-[200px] bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-tl-3xl p-6 opacity-60">
+              <div className="relative md:absolute md:right-0 md:bottom-0 md:translate-x-1/4 md:translate-y-1/4 w-full md:w-[400px] h-auto md:h-[200px] bg-slate-50 dark:bg-slate-950 border border-slate-200 border-b-0 md:border-b-slate-200 dark:border-slate-800 dark:border-b-0 md:dark:border-b-slate-800 rounded-t-3xl md:rounded-tl-3xl md:rounded-tr-none p-6 opacity-100 md:opacity-60 translate-y-0">
                 <div className="space-y-4">
-                  <div className="h-10 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center px-4"><span className="w-3 h-3 bg-red-500 rounded-full mr-3"></span><div className="h-2 w-24 bg-slate-200 dark:bg-slate-700 rounded"></div></div>
-                  <div className="h-10 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center px-4"><span className="w-3 h-3 bg-emerald-500 rounded-full mr-3"></span><div className="h-2 w-32 bg-slate-200 dark:bg-slate-700 rounded"></div></div>
+                  <div className="h-10 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center px-4 shadow-sm"><span className="w-3 h-3 bg-red-500 rounded-full mr-3"></span><div className="h-2 w-24 bg-slate-200 dark:bg-slate-700 rounded"></div></div>
+                  <div className="h-10 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 flex items-center px-4 shadow-sm"><span className="w-3 h-3 bg-emerald-500 rounded-full mr-3"></span><div className="h-2 w-32 bg-slate-200 dark:bg-slate-700 rounded"></div></div>
                 </div>
               </div>
             </div>
