@@ -27,6 +27,8 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
   const [inTargetZone, setInTargetZone] = useState(false);
   const [targetHoldStart, setTargetHoldStart] = useState<number | null>(null);
   const [cameraError, setCameraError] = useState<string | null>(null);
+  // Ref mirror so the 30fps onResults closure always reads live positioning state
+  const isPositionedRef = useRef(false);
 
   const handleCloseSession = () => {
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
@@ -253,37 +255,50 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
         const ankle = results.poseLandmarks[28];
         const footIndex = results.poseLandmarks[32];
 
-        // Strict Calibration
-        if (hip && ankle) {
-          const isVisible = (hip.visibility || 0) > 0.6 && (ankle.visibility || 0) > 0.6;
-          setIsPositioned(isVisible);
-          if (!isVisible) {
+        // Strict Calibration — check visibility of primary landmarks for active exercise
+        const visLandmarks: any[] = [];
+        if (hip) visLandmarks.push(hip);
+        if (ankle) visLandmarks.push(ankle);
+        if (knee) visLandmarks.push(knee);
+
+        const allVisible = visLandmarks.length >= 2 &&
+          visLandmarks.every(lm => (lm.visibility || 0) > 0.6);
+
+        if (allVisible !== isPositionedRef.current) {
+          isPositionedRef.current = allVisible;
+          setIsPositioned(allVisible);
+          if (!allVisible) {
             setFeedback('Kripya poori tarah camera ke frame mein aaiye.');
           }
-        } else {
-          setIsPositioned(false);
         }
 
-        if (isPositioned && !isPausedRef.current) {
+        // ─── REP COUNTING STATE MACHINE ─────────────────────────────
+        // Uses isPositionedRef (not state) to avoid stale closure trap
+        if (isPositionedRef.current && !isPausedRef.current) {
           let currentAngle = 90;
-          let a, b, c;
+          let a: any, b: any, c: any;
+          // downTarget: angle that marks the "resting" phase
+          // upTarget:   angle that marks the "peak" phase — rep completes on returning here
           let downTarget = 100, upTarget = 150;
-          let compareMode = 'standard'; // 'standard' means down < downTarget and up > upTarget
+          let compareMode = 'standard'; // angle goes LOW then HIGH = rep done
 
           switch (exerciseName) {
             case 'Straight Leg Raise':
+              // Hip-Knee-Ankle angle: flat ~180 then raised ~120-140
               a = shoulder; b = hip; c = knee;
-              downTarget = 170; upTarget = 140;
-              compareMode = 'inverse'; // down > downTarget (flat), up < upTarget (lifted)
+              downTarget = 165; upTarget = 135;
+              compareMode = 'inverse'; // starts high (extended), goes low (raised)
               break;
             case 'Ankle Pumps':
+              // Knee-Ankle-FootIndex: plantar-flex ~80, dorsi-flex ~120
               a = knee; b = ankle; c = footIndex;
-              downTarget = 100; upTarget = 130;
+              downTarget = 90; upTarget = 115;
               break;
             case 'Seated Knee Extension':
             default:
+              // Hip-Knee-Ankle: bent ~80-100, extended ~150-170
               a = hip; b = knee; c = ankle;
-              downTarget = 100; upTarget = 150;
+              downTarget = 110; upTarget = 145;
               break;
           }
 
@@ -291,15 +306,17 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
             currentAngle = calculateAngle(a, b, c);
             setAngle(currentAngle);
 
-            // Form Correction with Debounce
+            // Debug: visible in DevTools console for threshold tuning
+            console.log(
+              `[RehabAI] Exercise: ${exerciseName} | Angle: ${currentAngle}° | Stage: ${stageRef.current} | Mode: ${compareMode} | down<${downTarget} up>${upTarget}`
+            );
+
+            // Form Correction with 3s debounce
             const now = Date.now();
             if (now - lastCorrectionRef.current >= 3000) {
-              let msg = "";
-              if (currentAngle < 60) {
-                msg = "Knee angle too low";
-              } else if (currentAngle > 165) {
-                msg = "Good form";
-              }
+              let msg = '';
+              if (compareMode === 'standard' && currentAngle < 60) msg = 'Aur neeche jaiye — extend fully!';
+              if (compareMode === 'inverse' && currentAngle > 175) msg = 'Good form — ab upar uthaiye!';
               if (msg) {
                 setFeedback(msg);
                 speakFeedback(msg);
@@ -307,28 +324,36 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
               }
             }
 
+            // ── Standard mode: down (bent) → up (extended) ──
             if (compareMode === 'standard') {
-              if (currentAngle < downTarget) {
+              if (currentAngle < downTarget && stageRef.current !== 'down') {
                 stageRef.current = 'down';
+                console.log('[RehabAI] Stage → DOWN');
               }
               if (currentAngle > upTarget && stageRef.current === 'down') {
                 stageRef.current = 'up';
+                console.log('[RehabAI] Stage → UP → REP COUNTED');
                 setReps((prev) => {
                   const newReps = prev + 1;
-                  if (newReps === targetReps) speakFeedback("Behtareen! Session poora hua.");
+                  if (newReps >= targetReps) speakFeedback('Behtareen! Session poora hua.');
                   else speakFeedback(newReps.toString());
                   return newReps;
                 });
               }
-            } else if (compareMode === 'inverse') {
-              if (currentAngle > downTarget) {
+            }
+
+            // ── Inverse mode: up (extended/flat) → down (raised/flexed) ──
+            if (compareMode === 'inverse') {
+              if (currentAngle > downTarget && stageRef.current !== 'down') {
                 stageRef.current = 'down';
+                console.log('[RehabAI] Stage → DOWN (flat/extended)');
               }
               if (currentAngle < upTarget && stageRef.current === 'down') {
                 stageRef.current = 'up';
+                console.log('[RehabAI] Stage → UP → REP COUNTED');
                 setReps((prev) => {
                   const newReps = prev + 1;
-                  if (newReps === targetReps) speakFeedback("Behtareen! Session poora hua.");
+                  if (newReps >= targetReps) speakFeedback('Behtareen! Session poora hua.');
                   else speakFeedback(newReps.toString());
                   return newReps;
                 });
@@ -336,6 +361,7 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
             }
           }
         }
+        // ─────────────────────────────────────────────────────────────
       } else {
         setIsPositioned(false);
       }
@@ -375,7 +401,11 @@ export function VisionSessionModal({ isOpen, onClose, exerciseName = "Knee Exten
         videoRef.current.srcObject = null;
       }
     };
-  }, [isOpen, speakFeedback, targetReps, exerciseName, isPositioned]);
+  // NOTE: isPositioned is intentionally excluded from deps. It's tracked via
+  // isPositionedRef inside the loop. Including it would remount the entire
+  // MediaPipe loop on every visibility change, resetting stageRef to 'neutral'.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isOpen, speakFeedback, targetReps, exerciseName]);
 
   // Setup Voice Recognition
   useEffect(() => {
